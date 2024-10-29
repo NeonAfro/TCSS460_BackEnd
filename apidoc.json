@@ -7,7 +7,7 @@
     "order": [
         "PostRegister",
         "PostLogin",
-        "PostChangePassword",
+        "PutChangePassword",
         "PostMessage",
         "GetAllMessages",
         "GetAllMessagesPri",

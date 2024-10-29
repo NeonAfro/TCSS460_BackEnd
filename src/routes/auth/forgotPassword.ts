@@ -12,13 +12,41 @@ import {
     validationFunctions,
     credentialingFunctions,
 } from '../../core/utilities';
+
+const isStringProvided = validationFunctions.isStringProvided;
+const generateHash = credentialingFunctions.generateHash;
+const generateSalt = credentialingFunctions.generateSalt;
+
+const forgotPasswordRouter: Router = express.Router();
+
+// password must be between 4 and 24 in length
+const isValidPassword = (password: string): boolean =>
+    isStringProvided(password) && password.length > 3 && password.length <= 24;
+
+const isValidEmail = (email: string): boolean =>
+    isStringProvided(email) && email.includes('@');
+const emailMiddlewareCheck = (
+    request: Request,
+    response: Response,
+    next: NextFunction
+) => {
+    if (isValidEmail(request.body.email)) {
+        next();
+    } else {
+        response.status(400).send({
+            message:
+                'Invalid or missing email  - please refer to documentation',
+        });
+    }
+};
+
 /**
- * @api {post} /changePassword Request to register a user
+ * @api {put} /forgotPassword Request to register a user
  *
  * @apiDescription Document this route. !**Document the password rules here**!
  * !**Document the role rules here**!
  *
- * @apiName PostChangePassword
+ * @apiName PutForgotPassword
  * @apiGroup Auth
  *
  * @apiBody {String} oldPassword a users old password
@@ -31,3 +59,9 @@ import {
  * @apiError (400: Invalid NewPassword) {String} message "Invalid or missing new passwrod  - please refer to documentation"
  * @apiError (400: Invalid ConfirmPassword) {String} message "Invalid or missing confirmation password  - please refer to documentation"
  */
+forgotPasswordRouter.put('/forgotPassword', emailMiddlewareCheck,
+    )
+registerRouter.post(
+    '/register',
+    emailMiddlewareCheck, // these middleware functions may be defined elsewhere!
+    (request: Request, response: Response, next: NextFunction) => {
