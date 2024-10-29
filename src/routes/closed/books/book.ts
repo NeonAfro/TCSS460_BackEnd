@@ -10,7 +10,6 @@
  *
  * @apiSuccess {Object[]} entry the book object containing information of the book <code>name</code>
  *
- * @apiError (500 Internal Server Error) {String} message "Internal Server Error"
  * @apiUse DBError
  */
 
