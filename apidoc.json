@@ -11,6 +11,16 @@
         "GetMessageName",
         "PutMessage",
         "DeleteMessagesPri",
-        "DeleteMessage"
+        "DeleteMessage",
+        "GetAllBooks",
+        "GetBooksByAuthor",
+        "GetBooksByISBN",
+        "GetBooksByTitle",
+        "GetBooksByRating",
+        "GetAllBooksByYear",
+        "PostBook",
+        "PutBookRating",
+        "DeleteBooksByISBN",
+        "DeleteBooksByRange"
     ]
 }

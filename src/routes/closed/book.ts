@@ -1,24 +1,40 @@
 /**
  * @apiDefine DBError
- * @apiError (500: Database Error) {String} message "Error on Server Side"
+ * @apiError (500: Database Error) {String} message "server error - contact support"
  */
 
 /**
- * @api {get} /book/all Request to get all book
- * @apiName GetAllbook
+ * @api {get} /book/all Request to get all books
+ * @apiName GetAllBooks
  * @apiGroup book
  *
- * @apiSuccess {Object[]} entry the book object containing information of the book <code>name</code>
+ * @apiSuccess (200: OK) {Object[]} entries List of all book entries.
+ * @apiSuccess (200: OK) {Object} entry Individual book entry.
+ * @apiSuccess (200: OK) {Number} entry.id Unique identifier of the book.
+ * @apiSuccess (200: OK) {Number} entry.isbn13 13-digit ISBN number of the book.
+ * @apiSuccess (200: OK) {String} entry.authors List of authors of the book.
+ * @apiSuccess (200: OK) {Number} entry.publication_year Year the book was published.
+ * @apiSuccess (200: OK) {String} entry.original_title Original title of the book, if different.
+ * @apiSuccess (200: OK) {String} entry.title Title of the book.
+ * @apiSuccess (200: OK) {Number} entry.rating_avg Average rating of the book.
+ * @apiSuccess (200: OK) {Number} entry.rating_count Total number of ratings the book has received.
+ * @apiSuccess (200: OK) {Number} entry.rating_1_star Count of 1-star ratings.
+ * @apiSuccess (200: OK) {Number} entry.rating_2_star Count of 2-star ratings.
+ * @apiSuccess (200: OK) {Number} entry.rating_3_star Count of 3-star ratings.
+ * @apiSuccess (200: OK) {Number} entry.rating_4_star Count of 4-star ratings.
+ * @apiSuccess (200: OK) {Number} entry.rating_5_star Count of 5-star ratings.
+ * @apiSuccess (200: OK) {String} entry.image_url URL for the book's cover image.
+ * @apiSuccess (200: OK) {String} entry.image_small_url URL for the smaller version of the book's cover image.
  *
  * @apiUse DBError
  */
 
 /**
- * @api {get} /book/:author Request to get all book by author
- * @apiName GetBookByAuthor
+ * @api {get} /book/:author Request to get all books by author
+ * @apiName GetBooksByAuthor
  * @apiGroup book
  *
- * @apiSuccess {Object[]} entry the book object containing information of the book from author <code>author</code>
+ * @apiSuccess (200: OK) {Object[]} entry the book object containing information of the book from author <code>author</code>
  * @apiParam {string} author the author to look up.
  *
  * @apiError (404: Name Not Found) {string} message "Author not found"
@@ -26,50 +42,38 @@
  */
 
 /**
- * @api {get} /book/:isbn Request to get all book by isbn
- * @apiName GetBookByISBN
+ * @api {get} /book/:isbn Request to get all books by ISBN
+ * @apiName GetBooksByISBN
  * @apiGroup book
  *
- * @apiSuccess {Object[]} entry the book object containing information of the book from author <code>author</code>
- * @apiParam {string} isbn the isbn to look up.
+ * @apiSuccess (200: OK) {Object[]} entry the book object containing information of the book from isbn <code>isbn</code>
+ * @apiParam {number} isbn the isbn to look up.
  *
- * @apiError (404: Name Not Found) {string} message "Author not found"
+ * @apiError (404: Name Not Found) {string} message "ISBN not found"
  * @apiUse DBError
  */
 
 /**
- * @api {get} /book/:ISBN Request to get all book by ISBN
- * @apiName GetBookByISBN
+ * @api {get} /book/:title Request to get all books by Title
+ * @apiName GetBooksByTitle
  * @apiGroup book
  *
- * @apiSuccess {Object[]} entry the book object containing information of the book from ISBN <code>author</code>
- * @apiParam {string} ISBN the ISBN to look up.
- *
- * @apiError (404: Name Not Found) {string} message "Author not found"
- * @apiUse DBError
- */
-
-/**
- * @api {get} /book/:title Request to get all book by Title
- * @apiName GetBookByTitle
- * @apiGroup book
- *
- * @apiSuccess {Object[]} entry the book object containing information of the book from title <code>author</code>
+ * @apiSuccess (200: OK) {Object[]} entry the book object containing information of the book from title <code>title</code>
  * @apiParam {string} title the title to look up.
  *
- * @apiError (404: Name Not Found) {string} message "Author not found"
+ * @apiError (404: Name Not Found) {string} message "Title not found"
  * @apiUse DBError
  */
 
 /**
- * @api {get} /book/:rating Request to get all book by rating
- * @apiName GetBookByRating
+ * @api {get} /book/:rating Request to get all books by rating
+ * @apiName GetBooksByRating
  * @apiGroup book
  *
- * @apiSuccess {Object[]} entry the book object containing information of the book from title <code>author</code>
- * @apiParam {string} rating the rating to look up.
+ * @apiSuccess (200: OK) {Object[]} entry the book object containing information of the book from rating <code>rating</code>
+ * @apiParam {number} rating the rating to look up.
  *
- * @apiError (404: Name Not Found) {string} message "Author not found"
+ * @apiError (404: Name Not Found) {string} message "Rating not found"
  * @apiUse DBError
  */
 
@@ -78,13 +82,11 @@
  *
  * @apiDescription Request to retrieve all the entries of <code>year</code>
  *
- * @apiName GetAllBookByYear
+ * @apiName GetAllBooksByYear
  * @apiGroup book
  *
+ * @apiSuccess (200: OK) {Object[]} entries List of all book entries for the specified year.
  * @apiQuery {number} year the year in which to retrieve all entries in that year
- *
- * @apiSuccess {String[]} entries the aggregate of all entries with <code>priority</code> as the following string:
- *      "{<code>priority</code>} - [<code>name</code>] says: <code>message</code>"
  *
  * @apiError (400: Invalid Priority) {String} message "Invalid or missing Priority  - please refer to documentation"
  * @apiError (404: No messages) {String} message "No Priority <code>priority</code> messages found"
@@ -146,7 +148,7 @@
  *
  * @apiDescription Request to delete a specific book entry by providing its ISBN.
  *
- * @apiName DeleteBookByISBN
+ * @apiName DeleteBooksByISBN
  * @apiGroup book
  *
  * @apiQuery {Number} isbn The ISBN of the book to be deleted.
@@ -159,11 +161,11 @@
  */
 
 /**
- * @api {delete} /deleteBooks Request to delete a range of books
+ * @api {delete} /deleteBooks Request to delete a range of books by year or ISBN
  *
  * @apiDescription Request to delete a range or series of book entries by specifying start and end dates or a range of ISBNs.
  *
- * @apiName DeleteBookByRange
+ * @apiName DeleteBooksByRange
  * @apiGroup book
  *
  * @apiQuery {String} [startDate] The publication date to start deleting books from, in YYYY-MM-DD format.
