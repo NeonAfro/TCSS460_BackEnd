@@ -29,6 +29,23 @@ interface: IBook {
  */
 
 /**
+ * @apiDefine JWT
+ * @apiHeader {String} Authorization The string "Bearer " + a valid JSON Web Token (JWT).
+ */
+
+/**
+ * @apiDefine JSONError
+ * @apiError (400: JSON Error) {String} message "malformed JSON in parameters"
+ */
+
+/**
+ * @apiDefine InvalidJWT
+ * @apiError (401: Unauthorized) {String} message "Invalid or missing JWT token"
+ */
+
+
+
+/**
  * @api {get} /book/all Request to get all books
  * @apiName GetAllBooks
  * @apiGroup book
@@ -59,8 +76,9 @@ interface: IBook {
  * @apiName GetBooksByAuthor
  * @apiGroup book
  *
- * @apiSuccess (200: OK) {Object[]} entry the book object containing information of the book from author <code>author</code>
- * @apiParam {string} author the author to look up.
+ * @apiParam {String} author The author to look up.
+ *
+ * @apiSuccess (200: OK) {Object[]} entry List of book objects by the specified author.
  *
  * @apiError (404: Name Not Found) {string} message "Author not found"
  * @apiUse DBError
@@ -71,8 +89,9 @@ interface: IBook {
  * @apiName GetBooksByISBN
  * @apiGroup book
  *
- * @apiSuccess (200: OK) {Object[]} entry the book object containing information of the book from isbn <code>isbn</code>
- * @apiParam {number} isbn the isbn to look up.
+ * @apiParam {String} isbn The ISBN to look up.
+ *
+ * @apiSuccess (200: OK) {Object} entry The book object containing information of the book with the specified ISBN.
  *
  * @apiError (404: Name Not Found) {string} message "ISBN not found"
  * @apiUse DBError
@@ -83,8 +102,9 @@ interface: IBook {
  * @apiName GetBooksByTitle
  * @apiGroup book
  *
- * @apiSuccess (200: OK) {Object[]} entry the book object containing information of the book from title <code>title</code>
- * @apiParam {string} title the title to look up.
+ * @apiParam {String} title The title to look up.
+ *
+ * @apiSuccess (200: OK) {Object} entry The book object containing information of the book with the specified title.
  *
  * @apiError (404: Name Not Found) {string} message "Title not found"
  * @apiUse DBError
@@ -95,8 +115,9 @@ interface: IBook {
  * @apiName GetBooksByRating
  * @apiGroup book
  *
- * @apiSuccess (200: OK) {Object[]} entry the book object containing information of the book from rating <code>rating</code>
- * @apiParam {number} rating the rating to look up.
+ * @apiParam {String} rating The rating to look up.
+ *
+ * @apiSuccess (200: OK) {Object[]} entry List of book objects with the specified rating.
  *
  * @apiError (404: Name Not Found) {string} message "Rating not found"
  * @apiUse DBError
@@ -110,8 +131,9 @@ interface: IBook {
  * @apiName GetAllBooksByYear
  * @apiGroup book
  *
- * @apiSuccess (200: OK) {Object[]} entries List of all book entries for the specified year.
- * @apiQuery {number} year the year in which to retrieve all entries in that year
+ * @apiQuery {Number} year The year in which to retrieve all entries.
+ *
+ * @apiSuccess (200: OK) {String[]} entries The aggregate of all entries with the specified year.
  *
  * @apiError (400: Invalid Priority) {String} message "Invalid or missing Priority  - please refer to documentation"
  * @apiError (404: No messages) {String} message "No Priority <code>priority</code> messages found"
