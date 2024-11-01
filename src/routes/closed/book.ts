@@ -1,3 +1,8 @@
+import express, { Request, Response, Router } from 'express';
+import { IBook, IRatings, IUrlIcon } from '../../core/models';
+
+const bookRouter: Router = express.Router();
+
 /**
  * @apiDefine DBError
  * @apiError (500: Database Error) {String} message "server error - contact support"
@@ -16,6 +21,11 @@
 /**
  * @apiDefine InvalidJWT
  * @apiError (401: Unauthorized) {String} message "Invalid or missing JWT token"
+ */
+
+/**
+ * @apiDefine ForbiddenJWT
+ * @apiError (403: Forbidden) {String} message "Token is not valid"
  */
 
 /**
@@ -43,6 +53,9 @@
  *
  * @apiUse DBError
  */
+bookRouter.get('/all', (request: Request, response: Response) => {
+    // Implementation here
+});
 
 /**
  * @api {get} /book/:author Request to get all books by author
@@ -56,6 +69,9 @@
  * @apiError (404: Name Not Found) {string} message "Author not found"
  * @apiUse DBError
  */
+bookRouter.get('/:author', (request: Request, response: Response) => {
+    // Implementation here
+});
 
 /**
  * @api {get} /book/:isbn Request to get all books by ISBN
@@ -69,6 +85,9 @@
  * @apiError (404: Name Not Found) {string} message "ISBN not found"
  * @apiUse DBError
  */
+bookRouter.get('/:isbn', (request: Request, response: Response) => {
+    // Implementation here
+});
 
 /**
  * @api {get} /book/:title Request to get all books by Title
@@ -82,6 +101,9 @@
  * @apiError (404: Name Not Found) {string} message "Title not found"
  * @apiUse DBError
  */
+bookRouter.get('/:title', (request: Request, response: Response) => {
+    // Implementation here
+});
 
 /**
  * @api {get} /book/:rating Request to get all books by rating
@@ -95,6 +117,9 @@
  * @apiError (404: Name Not Found) {string} message "Rating not found"
  * @apiUse DBError
  */
+bookRouter.get('/:rating', (request: Request, response: Response) => {
+    // Implementation here
+});
 
 /**
  * @api {get} /book Request to retrieve entries by year
@@ -112,9 +137,13 @@
  * @apiError (404: No messages) {String} message "No Priority <code>priority</code> messages found"
  * @apiUse DBError
  */
+bookRouter.get('/', (request: Request, response: Response) => {
+    // Implementation here
+    // needs query parameters
+});
 
 /**
- * @api {post} /newBook Request to add a new book
+ * @api {post} /book Request to add a new book
  *
  * @apiDescription Request to add a new book with title, author, published date, ISBN, and an optional message.
  *
@@ -138,9 +167,12 @@
  * @apiError (400: Missing Parameters) {String} message "Missing required information - please refer to documentation"
  * @apiUse DBError
  */
+bookRouter.post('/', (request: Request, response: Response) => {
+    // Implementation here
+});
 
 /**
- * @api {put} /updateRating Request to change an entry
+ * @api {put} /book Request to change an entry
  *
  * @apiDescription Request to replace or change the rating of a book
  *
@@ -162,9 +194,12 @@
  * @apiError (400: Bad Request) {String} message "Missing required information - please refer to documentation" if required parameters are missing.
  * @apiUse DBError
  */
+bookRouter.put('/', (request: Request, response: Response) => {
+    // Implementation here
+});
 
 /**
- * @api {delete} /deleteBook Request to delete a book by ISBN
+ * @api {delete} /book/:isbn Request to delete a book by ISBN
  *
  * @apiDescription Request to delete a specific book entry by providing its ISBN.
  *
@@ -179,9 +214,12 @@
  * @apiError (400: Bad Request) {String} message "Invalid or missing ISBN - please refer to documentation" if the ISBN parameter is missing or invalid.
  * @apiUse DBError
  */
+bookRouter.delete('/:isbn', (request: Request, response: Response) => {
+    // Implementation here
+});
 
 /**
- * @api {delete} /deleteBooks Request to delete a range of books by year or ISBN
+ * @api {delete} /book Request to delete a range of books by year or ISBN
  *
  * @apiDescription Request to delete a range or series of book entries by specifying start and end dates or a range of ISBNs.
  *
@@ -199,3 +237,9 @@
  * @apiError (400: Bad Request) {String} message "Invalid or missing range parameters - please refer to documentation" if neither a date range nor an ISBN range is provided or if the parameters are invalid.
  * @apiUse DBError
  */
+bookRouter.delete('/', (request: Request, response: Response) => {
+    // Implementation here
+    // needs query parameters
+});
+
+export { bookRouter };
