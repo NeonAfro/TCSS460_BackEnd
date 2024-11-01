@@ -1,3 +1,28 @@
+interface: IRatings {
+    average: number;
+    count: number;
+    rating_1: number;
+    rating_2: number;
+    rating_3: number;
+    rating_4: number;
+    rating_5: number;
+}
+
+interface: IUrlIcon {
+    large: string;
+    small: string;
+}
+
+interface: IBook {
+    isbn13: number;
+    authors: string;
+    publication: number;
+    original_title: string;
+    title: string;
+    ratings: IRatings;
+    icons: IUrlIcon;
+}
+
 /**
  * @apiDefine DBError
  * @apiError (500: Database Error) {String} message "server error - contact support"
@@ -8,7 +33,7 @@
  * @apiName GetAllBooks
  * @apiGroup book
  *
- * @apiSuccess (200: OK) {Object[]} entries List of all book entries.
+ * @apiSuccess (200: OK) {Object[]} entry List of all book entries.
  * @apiSuccess (200: OK) {Object} entry Individual book entry.
  * @apiSuccess (200: OK) {Number} entry.id Unique identifier of the book.
  * @apiSuccess (200: OK) {Number} entry.isbn13 13-digit ISBN number of the book.
