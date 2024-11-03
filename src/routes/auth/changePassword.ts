@@ -27,8 +27,13 @@ const isValidPassword = (password: string): boolean =>
 /**
  * @api {put} /changePassword Request to change password
  *
- * @apiDescription Document this route. !**Document the password rules here**!
- * !**Document the role rules here**!
+ * @apiDescription Request to change password
+ * 
+ * <ul> <b>Password:</b>
+ *      <li> Must be between 8 to 16 characters long</li>
+ *      <li> Must include both uppercase and lowercase letters </li>
+ *      <li> Must contain at least one numeric digit and special character </li>
+ * </ul>
  *
  * @apiName PutChangePassword
  * @apiGroup Auth
@@ -36,7 +41,6 @@ const isValidPassword = (password: string): boolean =>
  * @apiBody {String} oldPassword a users old password
  * @apiBody {String} newPassword a users new password
  * @apiBody {String} confirmNewPassword confirmation of new password
- * // confirmation password /= new password, oldPassword is not correct, password rules are met
  * 
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Invalid OldPassword) {String} message "Invalid or missing old password  - please refer to documentation"

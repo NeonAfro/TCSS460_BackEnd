@@ -65,7 +65,7 @@ const emailMiddlewareCheck = (
 /**
  * @api {post} /register Request to register a user
  *
- * @apiDescription Rules for Registration:<br>
+ * @apiDescription Request to register a user<br>
  * 
  * <ul> <b>Firstname/Lastname:</b>
  *      <li> Must only contain EN-US characters (a-Z)</li>
