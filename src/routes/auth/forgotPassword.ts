@@ -66,7 +66,7 @@ const emailMiddlewareCheck = (
  * @apiBody {String} confirmNewPassword confirmation of new password
  * 
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
- * @apiError (400: Invalid Username) {String} message "Invalid or missing username  - please refer to the registration documentation"
+ * @apiError (400: Invalid Username) {String} message "Invalid or missing username  - please refer to registration documentation"
  * @apiError (400: Invalid Email) {String} message "Invalid or missing email - please refer to registration documentation"
  * @apiError (400: Invalid NewPassword) {String} message "Invalid or missing new password  - please refer to documentation"
  * @apiError (400: Invalid ConfirmPassword) {String} message "Invalid or missing confirmation password  - please refer to documentation"
