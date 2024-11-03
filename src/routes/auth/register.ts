@@ -27,7 +27,11 @@ export interface IUserRequest extends Request {
 // Add more/your own password validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
 const isValidPassword = (password: string): boolean =>
-    isStringProvided(password) && password.length > 7;
+    isStringProvided(password) &&
+    password.length >= 8 &&
+    password.length <= 24 &&
+    /[!@#$%^&*()_+=-]/.test(password) &&
+    /\d/.test(password);
 
 // Add more/your own phone number validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
