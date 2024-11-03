@@ -27,12 +27,12 @@ export interface IUserRequest extends Request {
 // Add more/your own password validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
 const isValidPassword = (password: string): boolean =>
-    isStringProvided(password) && password.length > 7;
+    isStringProvided(password) && password.length >= 8 && password.length <= 16;
 
 // Add more/your own phone number validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
 const isValidPhone = (phone: string): boolean =>
-    isStringProvided(phone) && phone.length >= 10;
+    isStringProvided(phone) && phone.length == 11;
 
 // Add more/your own role validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
@@ -65,9 +65,30 @@ const emailMiddlewareCheck = (
 /**
  * @api {post} /register Request to register a user
  *
- * @apiDescription Document this route. !**Document the password rules here**!
- * !**Document the role rules here**!
- *
+ * @apiDescription Rules for Registration:<br>
+ * 
+ * <ul> <b>Firstname/Lastname:</b>
+ *      <li> Must only contain EN-US characters (a-Z)</li>
+ * </ul>
+ * 
+ * <ul> <b>Password:</b>
+ *      <li> Must be between 8 to 16 characters long</li>
+ *      <li> Must include both uppercase and lowercase letters </li>
+ *      <li> Must contain at least one numeric digit and special character </li>
+ * </ul>
+ * 
+ * <ul> <b>Email:</b>
+ *      <li> Must contain an @ sign with email service provider</li>
+ * </ul>
+ * 
+ * <ul> <b>Role:</b>
+ *      <li> a role will signify privileges on the account (1 = highest, 5 = lowest)</li>
+ * </ul>
+ * 
+ * <ul> <b>Phone Number:</b>
+ *      <li> Phone number must be in international format (X-XXX-XXX-XXXX)</li>
+ * </ul>
+ * 
  * @apiName PostRegister
  * @apiGroup Auth
  *
