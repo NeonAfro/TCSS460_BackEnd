@@ -26,9 +26,12 @@ export interface IUserRequest extends Request {
 
 // Add more/your own password validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
-const isValidPassword = (password: string): boolean =>
-    isStringProvided(password) && password.length >= 8 && password.length <= 16;
-
+const isValidPassword = (newPassword: string): boolean =>
+    isStringProvided(newPassword) &&
+    newPassword.length >= 8 &&
+    newPassword.length <= 24 &&
+    /[!@#$%^&*()_+=-]/.test(newPassword) &&
+    /\d/.test(newPassword);
 // Add more/your own phone number validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
 const isValidPhone = (phone: string): boolean =>
@@ -72,7 +75,7 @@ const emailMiddlewareCheck = (
  * </ul>
  * 
  * <ul> <b>Password:</b>
- *      <li> Must be between 8 to 16 characters long</li>
+ *      <li> Must be between 8 to 24 characters long</li>
  *      <li> Must include both uppercase and lowercase letters </li>
  *      <li> Must contain at least one numeric digit and special character </li>
  * </ul>

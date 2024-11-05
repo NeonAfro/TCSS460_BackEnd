@@ -17,7 +17,7 @@ export interface Auth {
     email: string;
     password: string;
 } 
-console.log("reached");
+
 const isStringProvided = validationFunctions.isStringProvided;
 const generateHash = credentialingFunctions.generateHash;
 const generateSalt = credentialingFunctions.generateSalt;
@@ -95,7 +95,7 @@ forgotPasswordRouter.put(
         } else {
             response.status(400).send({
                 message:
-                    'Invalid password  - please refer to documentation',
+                    'Invalid new password  - please refer to documentation',
             }); 
             return;
         }
