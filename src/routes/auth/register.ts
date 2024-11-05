@@ -32,6 +32,7 @@ const isValidPassword = (newPassword: string): boolean =>
     newPassword.length <= 24 &&
     /[!@#$%^&*()_+=-]/.test(newPassword) &&
     /\d/.test(newPassword);
+    
 // Add more/your own phone number validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
 const isValidPhone = (phone: string): boolean =>

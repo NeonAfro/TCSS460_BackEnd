@@ -48,7 +48,7 @@ const isValidEmail = (email: string): boolean =>
  * @apiDescription Request to create new password (forgot password)
  * 
  * <ul> <b>Password:</b>
- *      <li> Must be between 8 to 16 characters long</li>
+ *      <li> Must be between 8 to 24 characters long</li>
  *      <li> Must include both uppercase and lowercase letters </li>
  *      <li> Must contain at least one numeric digit and special character </li>
  * </ul>
