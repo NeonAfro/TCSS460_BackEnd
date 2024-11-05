@@ -1,7 +1,34 @@
 import express, { Request, Response, Router } from 'express';
 import { IBook, IRatings, IUrlIcon } from '../../core/models';
+import { pool, validationFunctions } from '../../core/utilities';
 
 const bookRouter: Router = express.Router();
+
+const isStringProvided = validationFunctions.isStringProvided;
+const isNumberProvided = validationFunctions.isNumberProvided;
+const format = (row) => ({
+    id: row.id,
+    IBook: {
+        isbn13: row.isbn13,
+        authors: row.authors,
+        publication: row.publication_year,
+        original_title: row.original_title,
+        title: row.title,
+        ratings: {
+            average: row.rating_avg,
+            count: row.rating_count,
+            rating_1: row.rating_1_star,
+            rating_2: row.rating_2_star,
+            rating_3: row.rating_3_star,
+            rating_4: row.rating_4_star,
+            rating_5: row.rating_5_star,
+        } as IRatings,
+        icons: {
+            large: row.image_url,
+            small: row.image_small_url,
+        } as IUrlIcon,
+    },
+});
 
 /**
  * @apiDefine DBError
@@ -53,8 +80,50 @@ const bookRouter: Router = express.Router();
  *
  * @apiUse DBError
  */
-bookRouter.get('/all', (request: Request, response: Response) => {
-    // Implementation here
+bookRouter.get('/all', async (request: Request, response: Response) => {
+    try {
+        const theQuery = `SELECT *
+        FROM books 
+        ORDER BY id
+        LIMIT $1
+        OFFSET $2`;
+
+        const limit: number =
+            isNumberProvided(request.query.limit) && +request.query.limit > 0
+                ? +request.query.limit
+                : 10;
+        const offset: number =
+            isNumberProvided(request.query.offset) && +request.query.offset >= 0
+                ? +request.query.offset
+                : 0;
+
+        const values = [limit, offset];
+
+        const { rows } = await pool.query(theQuery, values);
+
+        const result = await pool.query(
+            'SELECT count(*) AS exact_count FROM books;'
+        );
+        const count = result.rows[0].exact_count;
+
+        const formattedRows = rows.map(format);
+        console.log('rows:', formattedRows);
+
+        response.send({
+            entries: rows.map(format),
+            pagination: {
+                totalRecords: count,
+                limit,
+                offset,
+                nextPage: limit + offset,
+            },
+        });
+    } catch (error) {
+        console.error('Error executing query:', error);
+        response.status(500).send({
+            message: 'Internal server error',
+        });
+    }
 });
 
 /**
