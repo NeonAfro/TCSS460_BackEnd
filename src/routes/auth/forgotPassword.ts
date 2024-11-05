@@ -115,7 +115,7 @@ forgotPasswordRouter.put(
         pool.query(theQuery, values)
             .then((result) => {
                 if(result.rows.length == 0){
-                    response.status(400).send({
+                    response.status(404).send({
                         message: 'User does not exist within the database with the provided inputs'
                     })
                 } else {
