@@ -13,8 +13,12 @@ import {
     credentialingFunctions,
 } from '../../core/utilities';
 
+export interface Auth {
+    email: string;
+    password: string;
+}
+console.log('reached');
 const isStringProvided = validationFunctions.isStringProvided;
-const isNumberProvided = validationFunctions.isNumberProvided;
 const generateHash = credentialingFunctions.generateHash;
 const generateSalt = credentialingFunctions.generateSalt;
 
@@ -24,12 +28,12 @@ export interface IUserRequest extends Request {
     id: number;
 }
 
-const isValidPassword = (password: string): boolean =>
-    isStringProvided(password) &&
-    password.length >= 8 &&
-    password.length <= 24 &&
-    /[!@#$%^&*()_+=-]/.test(password) &&
-    /\d/.test(password);
+const isValidNewPassword = (newPassword: string): boolean =>
+    isStringProvided(newPassword) &&
+    newPassword.length >= 8 &&
+    newPassword.length <= 24 &&
+    /[!@#$%^&*()_+=-]/.test(newPassword) &&
+    /\d/.test(newPassword);
 
 const isValidPhone = (phone: string): boolean =>
     isStringProvided(phone) && phone.length >= 10;
@@ -37,54 +41,45 @@ const isValidPhone = (phone: string): boolean =>
 const isValidEmail = (email: string): boolean =>
     isStringProvided(email) && email.includes('@');
 
-// middleware functions may be defined elsewhere!
-const emailMiddlewareCheck = (
-    request: Request,
-    response: Response,
-    next: NextFunction
-) => {
-    if (isValidEmail(request.body.email)) {
-        next();
-    } else {
-        response.status(400).send({
-            message:
-                'Invalid or missing email  - please refer to documentation',
-        });
-    }
-};
-
 /**
- * @api {put} /forgotPassword Request to open forgotPassword for a user
+ * @api {put} /forgotPassword Request to create new password
  *
- * @apiDescription Requests to create a new password (forgot password)
+ * @apiDescription Request to create new password (forgot password)
+ *
+ * <ul> <b>Password:</b>
+ *      <li> Must be between 8 to 16 characters long</li>
+ *      <li> Must include both uppercase and lowercase letters </li>
+ *      <li> Must contain at least one numeric digit and special character </li>
+ * </ul>
  *
  *
  * @apiName PutForgotPassword
  * @apiGroup Auth
  *
- * @apiBody {String} texts a users phone
- * @apiBody {String} email a users email
+ * @apiBody {String} username a username *unique
+ * @apiBody {String} email a users email *unique
+ * @apiBody {String} phone a users phonenumber *unique
  * @apiBody {String} newPassword a users new password
  * @apiBody {String} confirmNewPassword confirmation of new password
- * // confirmation password /= new password, oldPassword is not correct, password rules are met
  *
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
- * @apiError (400: Invalid PhoneNumber) {String} message "Invalid or missing phone number  - please refer to documentation"
- * @apiError (400: Invalid Email) {String} message "Invalid or missing email  - please refer to documentation"
+ * @apiError (400: Invalid Username) {String} message "Invalid or missing username  - please refer to registration documentation"
+ * @apiError (400: Invalid Email) {String} message "Invalid or missing email - please refer to registration documentation"
+ * @apiError (400: Invalid PhoneNumber) {String} message "Invalid or missing phone number - please refer to registration documentation"
  * @apiError (400: Invalid NewPassword) {String} message "Invalid or missing new password  - please refer to documentation"
  * @apiError (400: Invalid ConfirmPassword) {String} message "Invalid or missing confirmation password  - please refer to documentation"
  */
-
-forgotPasswordRouter.post(
+forgotPasswordRouter.put(
     '/forgotPassword',
-    emailMiddlewareCheck, // these middleware functions may be defined elsewhere!
     (request: Request, response: Response, next: NextFunction) => {
         //Verify that the caller supplied all the parameters
-        //In js, empty strings or null values evaluate to false
+        //In js, empty strings or null values evaulte to false
         if (
-            isStringProvided(request.body.firstname) &&
-            isStringProvided(request.body.lastname) &&
-            isStringProvided(request.body.username)
+            // username, email, new password must be provided
+            isStringProvided(request.body.username) &&
+            isStringProvided(request.body.email) &&
+            isStringProvided(request.body.newPassword) &&
+            isStringProvided(request.body.phone)
         ) {
             next();
         } else {
@@ -94,25 +89,84 @@ forgotPasswordRouter.post(
         }
     },
     (request: Request, response: Response, next: NextFunction) => {
-        if (isValidPhone(request.body.phone)) {
+        if (isValidNewPassword(request.body.newPassword)) {
             next();
             return;
         } else {
             response.status(400).send({
-                message:
-                    'Invalid or missing phone number  - please refer to documentation',
+                message: 'Invalid password  - please refer to documentation',
             });
             return;
         }
     },
-    (request: Request, response: Response, next: NextFunction) => {
-        if (isValidPassword(request.body.password)) {
-            next();
-        } else {
-            response.status(400).send({
-                message:
-                    'Invalid or missing password  - please refer to documentation',
+    // Check if User exists within the database
+    (request: IUserRequest, response: Response, next: NextFunction) => {
+        const theQuery = `
+            SELECT account_id FROM Account 
+            WHERE username = $1 AND email = $2 AND phone = $3
+        `;
+        const values = [
+            request.body.username,
+            request.body.email,
+            request.body.phone,
+        ];
+        console.dir({ ...request.body, password: '******' });
+        pool.query(theQuery, values)
+            .then((result) => {
+                if (result.rows.length == 0) {
+                    response.status(400).send({
+                        message:
+                            'User does not exist within the database with the provided inputs',
+                    });
+                } else {
+                    request.id = result.rows[0].account_id;
+                    next();
+                }
+            })
+            .catch((error) => {
+                console.error('DB Query error on account retrieval');
+                console.error(error);
+                response.status(500).send({
+                    message: 'DB server error - contact support',
+                });
             });
+    },
+    (request: IUserRequest, response: Response) => {
+        if (!request.id) {
+            response
+                .status(500)
+                .send({ message: 'Server error - contact support' });
+            return;
         }
+
+        const salt = generateSalt(32);
+        const saltedHash = generateHash(request.body.newPassword, salt);
+
+        const updateQuery = `
+            UPDATE Account_Credential SET salted_hash = $1, salt = $2 WHERE account_id = $3
+        `;
+        const values = [saltedHash, salt, request.id];
+
+        pool.query(updateQuery, values)
+            .then(() => {
+                const resetToken = jwt.sign(
+                    { id: request.id },
+                    key.secret,
+                    { expiresIn: '15m' } // Token expires in 15 minutes
+                );
+
+                response.status(200).send({
+                    message: 'Password updated successfully',
+                    resetToken, // Optionally send this to confirm success
+                });
+            })
+            .catch((error) => {
+                console.error('Error updating password in the database');
+                console.error(error);
+                response.status(500).send({
+                    message: 'Server error - contact support',
+                });
+            });
     }
 );
+export { forgotPasswordRouter };

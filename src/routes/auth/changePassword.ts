@@ -13,20 +13,27 @@ import {
     credentialingFunctions,
 } from '../../core/utilities';
 
+export interface Auth {
+    email: string;
+    password: string;
+}
+console.log('reached');
 const isStringProvided = validationFunctions.isStringProvided;
 const generateHash = credentialingFunctions.generateHash;
 const generateSalt = credentialingFunctions.generateSalt;
 
 const changePasswordRouter: Router = express.Router();
 
-//Password must be between 8-24 in length
-//Password must also contain 1 special symbol and have at least one digit
-const isValidPassword = (password: string): boolean =>
-    isStringProvided(password) &&
-    password.length >= 8 &&
-    password.length <= 24 &&
-    /[!@#$%^&*()_+=-]/.test(password) &&
-    /\d/.test(password);
+export interface IUserRequest extends Request {
+    id: number;
+}
+
+const isValidNewPassword = (newPassword: string): boolean =>
+    isStringProvided(newPassword) &&
+    newPassword.length >= 8 &&
+    newPassword.length <= 24 &&
+    /[!@#$%^&*()_+=-]/.test(newPassword) &&
+    /\d/.test(newPassword);
 
 /**
  * @api {post} /changePassword Request to changePassword for a user
@@ -51,31 +58,100 @@ const isValidPassword = (password: string): boolean =>
  *
  */
 
-changePasswordRouter.post(
+changePasswordRouter.put(
     '/changePassword',
     (request: Request, response: Response, next: NextFunction) => {
-        if (isValidPassword(request.body.password)) {
+        //Verify that the caller supplied all the parameters
+        //In js, empty strings or null values evaulte to false
+        if (
+            // username, email, new password must be provided
+            isStringProvided(request.body.username) &&
+            isStringProvided(request.body.password) &&
+            isStringProvided(request.body.newPassword) &&
+            isStringProvided(request.body.confirmNewPassword)
+        ) {
             next();
         } else {
             response.status(400).send({
-                message: 'Invalid Password  - please refer to documentation',
+                message: 'Missing required information',
             });
         }
+    },
+    (request: Request, response: Response, next: NextFunction) => {
+        if (isValidNewPassword(request.body.newPassword)) {
+            next();
+            return;
+        } else {
+            response.status(400).send({
+                message: 'Invalid password  - please refer to documentation',
+            });
+            return;
+        }
+    },
+    // Check if User exists within the database
+    (request: IUserRequest, response: Response, next: NextFunction) => {
+        const theQuery = `
+            SELECT account_id FROM Account 
+            WHERE username = $1
+        `;
+        const values = [request.body.username];
+        console.dir({ ...request.body, password: '******' });
+        pool.query(theQuery, values)
+            .then((result) => {
+                if (result.rows.length == 0) {
+                    response.status(400).send({
+                        message:
+                            'User does not exist within the database with the provided inputs',
+                    });
+                } else {
+                    request.id = result.rows[0].account_id;
+                    next();
+                }
+            })
+            .catch((error) => {
+                console.error('DB Query error on account retrieval');
+                console.error(error);
+                response.status(500).send({
+                    message: 'DB server error - contact support',
+                });
+            });
+    },
+    (request: IUserRequest, response: Response) => {
+        if (!request.id) {
+            response
+                .status(500)
+                .send({ message: 'Server error - contact support' });
+            return;
+        }
+
+        const salt = generateSalt(32);
+        const saltedHash = generateHash(request.body.newPassword, salt);
+
+        const updateQuery = `
+            UPDATE Account_Credential SET salted_hash = $1, salt = $2 WHERE account_id = $3
+        `;
+        const values = [saltedHash, salt, request.id];
+
+        pool.query(updateQuery, values)
+            .then(() => {
+                const resetToken = jwt.sign(
+                    { id: request.id },
+                    key.secret,
+                    { expiresIn: '15m' } // Token expires in 15 minutes
+                );
+
+                response.status(200).send({
+                    message: 'Password updated successfully',
+                    resetToken, // Optionally send this to confirm success
+                });
+            })
+            .catch((error) => {
+                console.error('Error updating password in the database');
+                console.error(error);
+                response.status(500).send({
+                    message: 'Server error - contact support',
+                });
+            });
     }
 );
-
-changePasswordRouter.get('/hash_demo', (request, response) => {
-    const password = 'password12345';
-
-    const salt = generateSalt(32);
-    const saltedHash = generateHash(password, salt);
-    const unsaltedHash = generateHash(password, '');
-
-    response.status(200).send({
-        salt: salt,
-        salted_hash: saltedHash,
-        unsalted_hash: unsaltedHash,
-    });
-});
-
 export { changePasswordRouter };
