@@ -19,9 +19,9 @@ const generateSalt = credentialingFunctions.generateSalt;
 
 const changePasswordRouter: Router = express.Router();
 
-// password must be between 4 and 24 in length
+// password must be between 8 and 16 in length
 const isValidPassword = (password: string): boolean =>
-    isStringProvided(password) && password.length > 3 && password.length <= 24;
+    isStringProvided(password) && password.length >= 8 && password.length <= 16;
 
 
 /**
