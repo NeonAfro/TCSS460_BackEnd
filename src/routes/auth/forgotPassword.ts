@@ -102,8 +102,10 @@ forgotPasswordRouter.put(
     },
     // Check if User exists within the database
     (request: IUserRequest, response: Response, next: NextFunction) => {
-        const theQuery = 
-        'SELECT Account(username, email, phone) FROM VALUES ($1, $2, $3) RETURNING account_id';
+        const theQuery = `
+            SELECT account_id FROM Account 
+            WHERE username = $1 AND email = $2 AND phone = $3
+        `;
         const values = [
             request.body.username,
             request.body.email,
@@ -125,7 +127,7 @@ forgotPasswordRouter.put(
                     console.error('DB Query error on account retrieval');
                     console.error(error);
                     response.status(500).send({
-                        message: 'server error - contact support',
+                        message: 'DB server error - contact support',
                     });
             
             });
