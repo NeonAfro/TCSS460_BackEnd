@@ -13,6 +13,11 @@ import {
     credentialingFunctions,
 } from '../../core/utilities';
 
+export interface Auth {
+    email: string;
+    password: string;
+} 
+console.log("reached");
 const isStringProvided = validationFunctions.isStringProvided;
 const generateHash = credentialingFunctions.generateHash;
 const generateSalt = credentialingFunctions.generateSalt;
@@ -23,12 +28,13 @@ export interface IUserRequest extends Request {
     id: number;
 }
 
-const isValidNewPassword = (password: string): boolean =>
-    isStringProvided(password) &&
-    password.length >= 8 &&
-    password.length <= 24 &&
-    /[!@#$%^&*()_+=-]/.test(password) &&
-    /\d/.test(password);
+
+const isValidNewPassword = (newPassword: string): boolean =>
+    isStringProvided(newPassword) &&
+    newPassword.length >= 8 &&
+    newPassword.length <= 24 &&
+    /[!@#$%^&*()_+=-]/.test(newPassword) &&
+    /\d/.test(newPassword);
 
 const isValidPhone = (phone: string): boolean =>
     isStringProvided(phone) && phone.length >= 10;
@@ -72,7 +78,7 @@ forgotPasswordRouter.put(
     if ( // username, email, new password must be provided
         isStringProvided(request.body.username) &&
         isStringProvided(request.body.email) &&
-        isStringProvided(request.body.newpassword) &&
+        isStringProvided(request.body.newPassword) &&
         isStringProvided(request.body.phone)
     ){
         next();
@@ -83,7 +89,7 @@ forgotPasswordRouter.put(
     }
     },
     (request: Request, response: Response, next: NextFunction) => {
-        if(isValidNewPassword(request.body.newpassword)) {
+        if(isValidNewPassword(request.body.newPassword)) {
             next();
             return;
         } else {
