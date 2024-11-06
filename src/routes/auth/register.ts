@@ -31,12 +31,14 @@ const isValidPassword = (newPassword: string): boolean =>
     newPassword.length >= 8 &&
     newPassword.length <= 24 &&
     /[!@#$%^&*()_+=-]/.test(newPassword) &&
-    /\d/.test(newPassword);
+    /\d/.test(newPassword) &&
+    /[a-z]/.test(newPassword) && 
+    /[A-Z]/.test(newPassword);;
     
 // Add more/your own phone number validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
 const isValidPhone = (phone: string): boolean =>
-    isStringProvided(phone) && phone.length == 11;
+    isStringProvided(phone) && phone.length == 12;
 
 // Add more/your own role validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
@@ -117,8 +119,7 @@ const emailMiddlewareCheck = (
  *
  */
 registerRouter.post(
-    '/register',
-    emailMiddlewareCheck, // these middleware functions may be defined elsewhere!
+    '/register', // these middleware functions may be defined elsewhere!
     (request: Request, response: Response, next: NextFunction) => {
         //Verify that the caller supplied all the parameters
         //In js, empty strings or null values evaluate to false
@@ -165,7 +166,7 @@ registerRouter.post(
                     'Invalid or missing role  - please refer to documentation',
             });
         }
-    },
+    }, emailMiddlewareCheck,
     (request: IUserRequest, response: Response, next: NextFunction) => {
         const theQuery =
             'INSERT INTO Account(firstname, lastname, username, email, phone, account_role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING account_id';

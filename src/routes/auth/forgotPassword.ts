@@ -34,7 +34,9 @@ const isValidNewPassword = (newPassword: string): boolean =>
     newPassword.length >= 8 &&
     newPassword.length <= 24 &&
     /[!@#$%^&*()_+=-]/.test(newPassword) &&
-    /\d/.test(newPassword);
+    /\d/.test(newPassword) &&
+    /[a-z]/.test(newPassword) && 
+    /[A-Z]/.test(newPassword);;
 
 const isValidPhone = (phone: string): boolean =>
     isStringProvided(phone) && phone.length >= 10;
