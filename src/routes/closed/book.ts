@@ -3,9 +3,8 @@ import { IBook, IRatings, IUrlIcon } from '../../core/models';
 import { pool, validationFunctions } from '../../core/utilities';
 
 const bookRouter: Router = express.Router();
+const { isStringProvided, isNumberProvided } = validationFunctions;
 
-const isStringProvided = validationFunctions.isStringProvided;
-const isNumberProvided = validationFunctions.isNumberProvided;
 const format = (row) => ({
     id: row.id,
     IBook: {
@@ -61,25 +60,32 @@ const format = (row) => ({
  * @apiGroup book
  *
  * @apiSuccess (200: OK) {Object[]} entry List of all book entries.
- * @apiSuccess (200: OK) {Object} entry Individual book entry.
  * @apiSuccess (200: OK) {Number} entry.id Unique identifier of the book.
- * @apiSuccess (200: OK) {Number} entry.isbn13 13-digit ISBN number of the book.
- * @apiSuccess (200: OK) {String} entry.authors List of authors of the book.
- * @apiSuccess (200: OK) {Number} entry.publication_year Year the book was published.
- * @apiSuccess (200: OK) {String} entry.original_title Original title of the book, if different.
- * @apiSuccess (200: OK) {String} entry.title Title of the book.
- * @apiSuccess (200: OK) {Number} entry.rating_avg Average rating of the book.
- * @apiSuccess (200: OK) {Number} entry.rating_count Total number of ratings the book has received.
- * @apiSuccess (200: OK) {Number} entry.rating_1_star Count of 1-star ratings.
- * @apiSuccess (200: OK) {Number} entry.rating_2_star Count of 2-star ratings.
- * @apiSuccess (200: OK) {Number} entry.rating_3_star Count of 3-star ratings.
- * @apiSuccess (200: OK) {Number} entry.rating_4_star Count of 4-star ratings.
- * @apiSuccess (200: OK) {Number} entry.rating_5_star Count of 5-star ratings.
- * @apiSuccess (200: OK) {String} entry.image_url URL for the book's cover image.
- * @apiSuccess (200: OK) {String} entry.image_small_url URL for the smaller version of the book's cover image.
+ * @apiSuccess (200: OK) {Object} entry.IBook Individual book entry.
+ * @apiSuccess (200: OK) {Number} entry.IBook.isbn13 13-digit ISBN number of the book.
+ * @apiSuccess (200: OK) {String} entry.IBook.authors List of authors of the book.
+ * @apiSuccess (200: OK) {Number} entry.IBook.publication_year Year the book was published.
  *
- * @apiUse DBError
+ * @apiSuccess (200: OK) {Object} entry.IBook.IRatings Ratings
+ * @apiSuccess (200: OK) {Number} entry.IBook.IRatings.rating_avg Average rating of the book.
+ * @apiSuccess (200: OK) {Number} entry.IBook.IRatings.rating_count Total ratings count.
+ * @apiSuccess (200: OK) {Number} entry.IBook.IRatings.rating_1_star Count of 1-star ratings.
+ *
+ * @apiSuccess (200: OK) {Object} entry.IBook.IUrlIcon Icons
+ * @apiSuccess (200: OK) {String} entry.IBook.IUrlIcon.image_url URL of the book's cover image.
+ * @apiSuccess (200: OK) {String} entry.IBook.IUrlIcon.image_small_url Small image URL.
+ *
+ * @apiSuccess {Object} pagination metadata results from this paginated query
+ * @apiSuccess {number} pagination.totalRecords the most recent count on the total amount of entries. May be stale.
+ * @apiSuccess {number} pagination.limit the number of entry objects to returned.
+ * @apiSuccess {number} pagination.cursor the value that should be used on a preceding call to this route.
+ *
+ * @apiuse ForbiddenJWT
+ * @apiuse InvalidJWT
+ * @apiuse DBError
+ *
  */
+
 bookRouter.get('/all', async (request: Request, response: Response) => {
     try {
         const theQuery = `SELECT *
