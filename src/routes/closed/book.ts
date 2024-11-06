@@ -1,4 +1,4 @@
-import express, { Request, Response, Router } from 'express';
+import express, { NextFunction, Request, Response, Router } from 'express';
 import { IBook, IRatings, IUrlIcon } from '../../core/models';
 import { pool, validationFunctions } from '../../core/utilities';
 
@@ -217,6 +217,42 @@ bookRouter.get('/', (request: Request, response: Response) => {
     // needs query parameters
 });
 
+//Post middleware function to check valid book post
+function mwValidBookBody(
+    request: Request,
+    response: Response,
+    next: NextFunction
+) {
+    const { title, author, isbn, date } = request.body;
+
+    if (!isStringProvided(title) || title.length < 3) {
+        return response.status(400).send({
+            message: 'Title is required and should be at least 3 characters',
+        });
+    }
+    if (!isStringProvided(author)) {
+        return response.status(400).send({ message: 'Author is required' });
+    }
+    if (!isNumberProvided(isbn) || isbn.toString().length !== 13) {
+        return response
+            .status(400)
+            .send({ message: 'ISBN must be a 13-digit number' });
+    }
+    if (
+        !isNumberProvided(date) ||
+        date < 1000 ||
+        date > new Date().getFullYear()
+    ) {
+        //are there any books published before 1000 in our db?
+        return response.status(400).send({
+            message:
+                'Date must be a valid year between 1000 and the current year',
+        });
+    }
+
+    next();
+}
+
 /**
  * @api {post} /book Request to add a new book
  *
@@ -242,9 +278,73 @@ bookRouter.get('/', (request: Request, response: Response) => {
  * @apiError (400: Missing Parameters) {String} message "Missing required information - please refer to documentation"
  * @apiUse DBError
  */
-bookRouter.post('/', (request: Request, response: Response) => {
-    // Implementation here
-});
+bookRouter.post(
+    '/',
+    mwValidBookBody,
+    async (request: Request, response: Response) => {
+        const { title, author, date, isbn, message } = request.body;
+
+        try {
+            // Step 1: Check for existing book by ISBN
+            const checkQuery = 'SELECT * FROM books WHERE isbn13 = $1';
+            const { rowCount } = await pool.query(checkQuery, [isbn]);
+
+            if (rowCount > 0) {
+                // ISBN already exists, so we return a 400 response
+                console.error('Attempt to add duplicate ISBN:', isbn);
+                return response.status(400).send({
+                    message: 'Book with ISBN already exists',
+                });
+            }
+
+            // Step 2: Insert the new book into the database
+            const insertQuery = `
+                INSERT INTO books (title, authors, isbn13, publication_year, message) 
+                VALUES ($1, $2, $3, $4, $5) RETURNING *;
+            `;
+            const values = [title, author, isbn, date, message || null];
+            const insertResult = await pool.query(insertQuery, values);
+
+            // Step 3: Respond with the created book data
+            response.status(201).send({
+                entry: insertResult.rows[0],
+                message: 'Book added successfully',
+            });
+        } catch (error) {
+            console.error('Database error on POST /book:', error);
+            response.status(500).send({
+                message: 'Internal server error - please contact support',
+            });
+        }
+    }
+);
+
+//MW func for putting new rating
+function mwValidBookRating(
+    request: Request,
+    response: Response,
+    next: NextFunction
+) {
+    const { title, author, rating } = request.body;
+
+    if (!isStringProvided(title) || title.length < 3) {
+        return response.status(400).send({
+            message: 'Title is required and should be at least 3 characters',
+        });
+    }
+    if (!isStringProvided(author)) {
+        return response.status(400).send({
+            message: 'Author is required',
+        });
+    }
+    if (!isNumberProvided(rating) || rating < 1 || rating > 5) {
+        return response.status(400).send({
+            message: 'Rating must be a number between 1 and 5 inclusive',
+        });
+    }
+
+    next();
+}
 
 /**
  * @api {put} /book Request to change an entry
@@ -269,9 +369,11 @@ bookRouter.post('/', (request: Request, response: Response) => {
  * @apiError (400: Bad Request) {String} message "Missing required information - please refer to documentation" if required parameters are missing.
  * @apiUse DBError
  */
-bookRouter.put('/', (request: Request, response: Response) => {
-    // Implementation here
-});
+bookRouter.put(
+    '/',
+    mwValidBookRating,
+    (request: Request, response: Response) => {}
+);
 
 /**
  * @api {delete} /book/:isbn Request to delete a book by ISBN
