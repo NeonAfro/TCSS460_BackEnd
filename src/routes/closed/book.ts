@@ -238,7 +238,6 @@ function mwValidBookBody(
         date > new Date().getFullYear()
     ) {
         //are there any books published before 1000 in our db?
-
         return response.status(400).send({
             message:
                 'Date must be a valid year between 1000 and the current year',
@@ -275,7 +274,7 @@ function mwValidBookBody(
  */
 bookRouter.post(
     '/',
-    mwValidBookBody, // Middleware to validate the request body
+    mwValidBookBody,
     async (request: Request, response: Response) => {
         const { title, author, date, isbn, message } = request.body;
 
@@ -314,6 +313,33 @@ bookRouter.post(
     }
 );
 
+//MW func for putting new rating
+function mwValidBookRating(
+    request: Request,
+    response: Response,
+    next: NextFunction
+) {
+    const { title, author, rating } = request.body;
+
+    if (!isStringProvided(title) || title.length < 3) {
+        return response.status(400).send({
+            message: 'Title is required and should be at least 3 characters',
+        });
+    }
+    if (!isStringProvided(author)) {
+        return response.status(400).send({
+            message: 'Author is required',
+        });
+    }
+    if (!isNumberProvided(rating) || rating < 1 || rating > 5) {
+        return response.status(400).send({
+            message: 'Rating must be a number between 1 and 5 inclusive',
+        });
+    }
+
+    next();
+}
+
 /**
  * @api {put} /book Request to change an entry
  *
@@ -337,9 +363,11 @@ bookRouter.post(
  * @apiError (400: Bad Request) {String} message "Missing required information - please refer to documentation" if required parameters are missing.
  * @apiUse DBError
  */
-bookRouter.put('/', (request: Request, response: Response) => {
-    // Implementation here
-});
+bookRouter.put(
+    '/',
+    mwValidBookRating,
+    (request: Request, response: Response) => {}
+);
 
 /**
  * @api {delete} /book/:isbn Request to delete a book by ISBN
