@@ -237,7 +237,7 @@ function mwValidBookBody(
         date < 1000 ||
         date > new Date().getFullYear()
     ) {
-        //are there any books published before 100 in our db?
+        //are there any books published before 1000 in our db?
 
         return response.status(400).send({
             message:
