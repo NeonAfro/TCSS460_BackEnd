@@ -26,18 +26,23 @@ export interface IUserRequest extends Request {
 
 // Add more/your own password validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
-const isValidPassword = (password: string): boolean =>
-    isStringProvided(password) && password.length > 7;
-
+const isValidPassword = (newPassword: string): boolean =>
+    isStringProvided(newPassword) &&
+    newPassword.length >= 8 &&
+    newPassword.length <= 24 &&
+    /[!@#$%^&*()_+=-]/.test(newPassword) &&
+    /\d/.test(newPassword) &&
+    /[a-z]/.test(newPassword) && 
+    /[A-Z]/.test(newPassword);;
+    
 // Add more/your own phone number validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
 const isValidPhone = (phone: string): boolean =>
-    isStringProvided(phone) && phone.length >= 10;
+    /^\d{3}-\d{3}-\d{4}$/.test(phone);
 
 // Add more/your own role validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
 const isValidRole = (priority: string): boolean =>
-    validationFunctions.isNumberProvided(priority) &&
     parseInt(priority) >= 1 &&
     parseInt(priority) <= 5;
 
@@ -57,7 +62,7 @@ const emailMiddlewareCheck = (
     } else {
         response.status(400).send({
             message:
-                'Invalid or missing email  - please refer to documentation',
+                'Invalid Email  - please refer to documentation',
         });
     }
 };
@@ -65,9 +70,30 @@ const emailMiddlewareCheck = (
 /**
  * @api {post} /register Request to register a user
  *
- * @apiDescription Document this route. !**Document the password rules here**!
- * !**Document the role rules here**!
- *
+ * @apiDescription Request to register a user<br>
+ * 
+ * <ul> <b>Firstname/Lastname:</b>
+ *      <li> Must only contain EN-US characters (a-Z)</li>
+ * </ul>
+ * 
+ * <ul> <b>Password:</b>
+ *      <li> Must be between 8 to 24 characters long</li>
+ *      <li> Must include both uppercase and lowercase letters </li>
+ *      <li> Must contain at least one numeric digit and special character </li>
+ * </ul>
+ * 
+ * <ul> <b>Email:</b>
+ *      <li> Must contain an @ sign with email service provider</li>
+ * </ul>
+ * 
+ * <ul> <b>Role:</b>
+ *      <li> a role will signify privileges on the account (1 = highest, 5 = lowest)</li>
+ * </ul>
+ * 
+ * <ul> <b>Phone Number:</b>
+ *      <li> Phone number must be in international format (X-XXX-XXX-XXXX)</li>
+ * </ul>
+ * 
  * @apiName PostRegister
  * @apiGroup Auth
  *
@@ -92,8 +118,7 @@ const emailMiddlewareCheck = (
  *
  */
 registerRouter.post(
-    '/register',
-    emailMiddlewareCheck, // these middleware functions may be defined elsewhere!
+    '/register', // these middleware functions may be defined elsewhere!
     (request: Request, response: Response, next: NextFunction) => {
         //Verify that the caller supplied all the parameters
         //In js, empty strings or null values evaluate to false
@@ -116,18 +141,18 @@ registerRouter.post(
         } else {
             response.status(400).send({
                 message:
-                    'Invalid or missing phone number  - please refer to documentation',
+                    'Invalid Phone Number - please refer to documentation',
             });
             return;
         }
-    },
+    }, emailMiddlewareCheck,
     (request: Request, response: Response, next: NextFunction) => {
         if (isValidPassword(request.body.password)) {
             next();
         } else {
             response.status(400).send({
                 message:
-                    'Invalid or missing password  - please refer to documentation',
+                    'Invalid Password - please refer to documentation',
             });
         }
     },
@@ -137,7 +162,7 @@ registerRouter.post(
         } else {
             response.status(400).send({
                 message:
-                    'Invalid or missing role  - please refer to documentation',
+                    'Invalid Role  - please refer to documentation',
             });
         }
     },
@@ -170,6 +195,10 @@ registerRouter.post(
                 } else if (error.constraint == 'account_email_key') {
                     response.status(400).send({
                         message: 'Email exists',
+                    });
+                } else if (error.constraint == 'account_phone_key') {
+                    response.status(400).send({
+                        message: 'Phone number exists',
                     });
                 } else {
                     //log the error

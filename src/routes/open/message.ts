@@ -206,7 +206,7 @@ messageRouter.get(
                 console.error(error);
                 response.status(500).send({
                     message: 'server error - contact support',
-                });
+                }); // TODO: document 500s
             });
     }
 );
