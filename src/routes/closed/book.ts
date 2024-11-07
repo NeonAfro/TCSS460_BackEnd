@@ -13,7 +13,7 @@ const format = (row) => ({
         publication: row.publication_year,
         original_title: row.original_title,
         title: row.title,
-        ratings: {
+        IRatings: {
             average: row.rating_avg,
             count: row.rating_count,
             rating_1: row.rating_1_star,
@@ -22,7 +22,7 @@ const format = (row) => ({
             rating_4: row.rating_4_star,
             rating_5: row.rating_5_star,
         } as IRatings,
-        icons: {
+        IUrlIcon: {
             large: row.image_url,
             small: row.image_small_url,
         } as IUrlIcon,
