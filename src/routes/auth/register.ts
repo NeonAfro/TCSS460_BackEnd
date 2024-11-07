@@ -31,7 +31,9 @@ const isValidPassword = (password: string): boolean =>
     password.length >= 8 &&
     password.length <= 24 &&
     /[!@#$%^&*()_+=-]/.test(password) &&
-    /\d/.test(password);
+    /\d/.test(password) &&
+    /[a-z]/.test(password) &&
+    /[A-Z]/.test(password);
 
 // Add more/your own phone number validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
@@ -60,8 +62,7 @@ const emailMiddlewareCheck = (
         next();
     } else {
         response.status(400).send({
-            message:
-                'Invalid or missing email  - please refer to documentation',
+            message: 'Invalid or missing email - please refer to documentation',
         });
     }
 };
@@ -116,13 +117,11 @@ registerRouter.post(
     (request: Request, response: Response, next: NextFunction) => {
         if (isValidPhone(request.body.phone)) {
             next();
-            return;
         } else {
             response.status(400).send({
                 message:
                     'Invalid or missing phone number  - please refer to documentation',
             });
-            return;
         }
     },
     (request: Request, response: Response, next: NextFunction) => {
@@ -156,7 +155,7 @@ registerRouter.post(
             request.body.phone,
             request.body.role,
         ];
-        console.dir({ ...request.body, password: '******' });
+        // console.dir({ ...request.body, password: '******' });
         pool.query(theQuery, values)
             .then((result) => {
                 //stash the account_id into the request object to be used in the next function
@@ -174,10 +173,6 @@ registerRouter.post(
                 } else if (error.constraint == 'account_email_key') {
                     response.status(400).send({
                         message: 'Email exists',
-                    });
-                } else if (error.constraint == 'account_phone_key') {
-                    response.status(400).send({
-                        message: 'Phone exists',
                     });
                 } else {
                     //log the error
@@ -211,6 +206,7 @@ registerRouter.post(
                         expiresIn: '14 days', // expires in 14 days
                     }
                 );
+                console.dir({ ...request.body, password: '******' });
                 //We successfully added the user!
                 response.status(201).send({
                     accessToken,

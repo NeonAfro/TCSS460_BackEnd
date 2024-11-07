@@ -33,7 +33,9 @@ const isValidNewPassword = (newPassword: string): boolean =>
     newPassword.length >= 8 &&
     newPassword.length <= 24 &&
     /[!@#$%^&*()_+=-]/.test(newPassword) &&
-    /\d/.test(newPassword);
+    /\d/.test(newPassword) &&
+    /[a-z]/.test(newPassword) &&
+    /[A-Z]/.test(newPassword);
 
 const isValidPhone = (phone: string): boolean =>
     isStringProvided(phone) && phone.length >= 10;
@@ -47,7 +49,7 @@ const isValidEmail = (email: string): boolean =>
  * @apiDescription Request to create new password (forgot password)
  *
  * <ul> <b>Password:</b>
- *      <li> Must be between 8 to 16 characters long</li>
+ *      <li> Must be between 8 to 24 characters long</li>
  *      <li> Must include both uppercase and lowercase letters </li>
  *      <li> Must contain at least one numeric digit and special character </li>
  * </ul>
@@ -58,7 +60,7 @@ const isValidEmail = (email: string): boolean =>
  *
  * @apiBody {String} username a username *unique
  * @apiBody {String} email a users email *unique
- * @apiBody {String} phone a users phonenumber *unique
+ * @apiBody {String} phone a users phone number *unique
  * @apiBody {String} newPassword a users new password
  * @apiBody {String} confirmNewPassword confirmation of new password
  *

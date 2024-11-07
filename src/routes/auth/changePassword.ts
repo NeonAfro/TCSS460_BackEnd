@@ -33,17 +33,25 @@ const isValidNewPassword = (newPassword: string): boolean =>
     newPassword.length >= 8 &&
     newPassword.length <= 24 &&
     /[!@#$%^&*()_+=-]/.test(newPassword) &&
-    /\d/.test(newPassword);
+    /\d/.test(newPassword) &&
+    /[a-z]/.test(newPassword) &&
+    /[A-Z]/.test(newPassword);
 
 /**
- * @api {post} /changePassword Request to changePassword for a user
+ * @api {put} /changePassword Request to change a password for a user
  *
- * @apiDescription Document this route. !**Document the password rules here**!
- * !**Document the role rules here**!
+ * @apiDescription Request to change passwords (change password)
  *
- * @apiName PostChangePassword
+ * <ul> <b>Password:</b>
+ *      <li> Must be between 8 to 24 characters long</li>
+ *      <li> Must include both uppercase and lowercase letters </li>
+ *      <li> Must contain at least one numeric digit and special character </li>
+ * </ul>
+ *
+ * @apiName PutChangePassword
  * @apiGroup Auth
  *
+ * @apiBody {String} username a users username *unique
  * @apiBody {String} oldPassword a users old password
  * @apiBody {String} newPassword a users new password
  * @apiBody {String} confirmNewPassword confirmation of new password
@@ -53,8 +61,8 @@ const isValidNewPassword = (newPassword: string): boolean =>
  * //old password is incorrect, confirm password is not the same.
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Invalid oldPassword) {String} message "Invalid old password  - please refer to documentation"
- * @apiError (400: Invalid confirmNewPassword) {String} message "Invalid NewPassword  - please refer to documentation"
- * @apiError (400: Invalid confirmNewPassword) {String} message "Invalid confirmNewPassword  - please refer to documentation"
+ * @apiError (400: Invalid confirmNewPassword) {String} message "Invalid or missing new password  - please refer to documentation"
+ * @apiError (400: Invalid confirmNewPassword) {String} message "Invalid or missing new password confirmation  - please refer to documentation"
  *
  */
 
