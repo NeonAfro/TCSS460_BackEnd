@@ -30,19 +30,18 @@ export interface IUserRequest extends Request {
 
 
 const isValidNewPassword = (newPassword: string): boolean =>
-    isStringProvided(newPassword) &&
     newPassword.length >= 8 &&
     newPassword.length <= 24 &&
     /[!@#$%^&*()_+=-]/.test(newPassword) &&
     /\d/.test(newPassword) &&
     /[a-z]/.test(newPassword) && 
-    /[A-Z]/.test(newPassword);;
+    /[A-Z]/.test(newPassword);
 
 const isValidPhone = (phone: string): boolean =>
-    isStringProvided(phone) && phone.length >= 10;
+    /^\d{3}-\d{3}-\d{4}$/.test(phone);
 
 const isValidEmail = (email: string): boolean =>
-    isStringProvided(email) && email.includes('@');
+    email.includes('@');
 
 /**
  * @api {put} /forgotPassword Request to create new password
@@ -65,12 +64,14 @@ const isValidEmail = (email: string): boolean =>
  * @apiBody {String} newPassword a users new password
  * @apiBody {String} confirmNewPassword confirmation of new password
  * 
+ * @apiSuccess (Success 201) {string} resetToken a newly created JWT
+ * 
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
- * @apiError (400: Invalid Username) {String} message "Invalid or missing username  - please refer to registration documentation"
+ * @apiError (400: Password Mismatch) {String} message "The passwords do not match"
  * @apiError (400: Invalid Email) {String} message "Invalid or missing email - please refer to registration documentation"
- * @apiError (400: Invalid PhoneNumber) {String} message "Invalid or missing phone number - please refer to registration documentation"
- * @apiError (400: Invalid NewPassword) {String} message "Invalid or missing new password  - please refer to documentation"
- * @apiError (400: Invalid ConfirmPassword) {String} message "Invalid or missing confirmation password  - please refer to documentation"
+ * @apiError (400: Invalid PhoneNumber) {String} message "Invalid phone number - please refer to registration documentation"
+ * @apiError (400: Invalid NewPassword) {String} message "Invalid new password - please refer to documentation"
+ * @apiError (404: User does not exist) {String} message "User does not exist within the Database"
  */
 forgotPasswordRouter.put(
     '/forgotPassword',
@@ -81,24 +82,52 @@ forgotPasswordRouter.put(
         isStringProvided(request.body.username) &&
         isStringProvided(request.body.email) &&
         isStringProvided(request.body.newPassword) &&
+        isStringProvided(request.body.confirmNewPassword)&&
         isStringProvided(request.body.phone)
     ){
         next();
     } else{
         response.status(400).send({
             message: 'Missing required information',
-        })
+        });
     }
     },
     (request: Request, response: Response, next: NextFunction) => {
         if(isValidNewPassword(request.body.newPassword)) {
-            next();
+            if(request.body.newPassword == request.body.confirmNewPassword){
+                next();
+                return;
+            } else {
+                response.status(400).send({
+                    message:
+                        'The passwords do not match',
+                }); 
+            }
             return;
         } else {
             response.status(400).send({
                 message:
                     'Invalid new password  - please refer to documentation',
             }); 
+            return;
+        }
+    }, 
+    (request: Request, response: Response, next: NextFunction) => {
+        if(isValidEmail(request.body.email)) next();
+        else {
+            response.status(400).send({
+                message: 'Invaid email - please refer to registration documentation',
+            });
+            return;
+        }
+    }
+    ,
+    (request: Request, response: Response, next: NextFunction) => { 
+        if(isValidPhone(request.body.phone)) next();
+        else {
+            response.status(400).send({
+                message: 'Invaid phone number - please refer to registration documentation',
+            });
             return;
         }
     },

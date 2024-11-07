@@ -38,12 +38,11 @@ const isValidPassword = (newPassword: string): boolean =>
 // Add more/your own phone number validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
 const isValidPhone = (phone: string): boolean =>
-    isStringProvided(phone) && phone.length == 12;
+    /^\d{3}-\d{3}-\d{4}$/.test(phone);
 
 // Add more/your own role validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
 const isValidRole = (priority: string): boolean =>
-    validationFunctions.isNumberProvided(priority) &&
     parseInt(priority) >= 1 &&
     parseInt(priority) <= 5;
 
@@ -63,7 +62,7 @@ const emailMiddlewareCheck = (
     } else {
         response.status(400).send({
             message:
-                'Invalid or missing email  - please refer to documentation',
+                'Invalid Email  - please refer to documentation',
         });
     }
 };
@@ -142,18 +141,18 @@ registerRouter.post(
         } else {
             response.status(400).send({
                 message:
-                    'Invalid or missing phone number  - please refer to documentation',
+                    'Invalid Phone Number - please refer to documentation',
             });
             return;
         }
-    },
+    }, emailMiddlewareCheck,
     (request: Request, response: Response, next: NextFunction) => {
         if (isValidPassword(request.body.password)) {
             next();
         } else {
             response.status(400).send({
                 message:
-                    'Invalid or missing password  - please refer to documentation',
+                    'Invalid Password - please refer to documentation',
             });
         }
     },
@@ -163,10 +162,10 @@ registerRouter.post(
         } else {
             response.status(400).send({
                 message:
-                    'Invalid or missing role  - please refer to documentation',
+                    'Invalid Role  - please refer to documentation',
             });
         }
-    }, emailMiddlewareCheck,
+    },
     (request: IUserRequest, response: Response, next: NextFunction) => {
         const theQuery =
             'INSERT INTO Account(firstname, lastname, username, email, phone, account_role) VALUES ($1, $2, $3, $4, $5, $6) RETURNING account_id';

@@ -39,9 +39,9 @@ const isValidNewPassword = (newPassword: string): boolean =>
     /[A-Z]/.test(newPassword);
 
 /**
- * @api {put} /forgotPassword Request to create new password
+ * @api {put} /changePassword Request to create new password
  *
- * @apiDescription Request to create new password (forgot password)
+ * @apiDescription Request to create new password (known password)
  * 
  * <ul> <b>Password:</b>
  *      <li> Must be between 8 to 24 characters long</li>
@@ -54,6 +54,7 @@ const isValidNewPassword = (newPassword: string): boolean =>
  * @apiGroup Auth
  *
  * @apiBody {String} username a username *unique
+ * @apiBody {String} password a users current password
  * @apiBody {String} newPassword a users new password
  * @apiBody {String} confirmNewPassword confirmation of new password
  * 
@@ -87,7 +88,7 @@ changePasswordRouter.put(
         } else {
             response.status(400).send({
                 message:
-                    'Invalid new password  - please refer to documentation',
+                    'Invalid New Password  - please refer to documentation',
             }); 
             return;
         }
