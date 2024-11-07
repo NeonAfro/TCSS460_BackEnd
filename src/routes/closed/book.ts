@@ -157,8 +157,52 @@ bookRouter.get('/all', async (request: Request, response: Response) => {
  * @apiError (404: Name Not Found) {string} message "Author not found"
  * @apiUse DBError
  */
-bookRouter.get('/:author', (request: Request, response: Response) => {
+bookRouter.get('/:author', async (request: Request, response: Response) => {
     // Implementation here
+    try {
+        const theQuery = `SELECT * 
+        FROM books WHERE authors=$3 
+        ORDER BY id
+        LIMIT $1
+        OFFSET $2`;
+
+        const limit: number =
+            isNumberProvided(request.query.limit) && +request.query.limit > 0
+                ? +request.query.limit
+                : 10;
+        const offset: number =
+            isNumberProvided(request.query.offset) && +request.query.offset >= 0
+                ? +request.query.offset
+                : 0;
+
+        const author = request.query.authors;
+        const values = [limit, offset, author];
+
+        const { rows } = await pool.query(theQuery, values);
+
+        const result = await pool.query(
+            'SELECT count(*) AS exact_count FROM books;'
+        );
+        const count = result.rows[0].exact_count;
+
+        const formattedRows = rows.map(format);
+        console.log('rows:', formattedRows);
+
+        response.send({
+            entries: rows.map(format),
+            pagination: {
+                totalRecords: count,
+                limit,
+                offset,
+                nextPage: limit + offset,
+            },
+        });
+    } catch (error) {
+        console.error('Error executing query:', error);
+        response.status(500).send({
+            message: 'Internal server error',
+        });
+    }
 });
 
 /**
@@ -396,7 +440,7 @@ bookRouter.put(
  * @apiName DeleteBooksByISBN
  * @apiGroup book
  *
- * @apiQuery {Number} isbn The ISBN of the book to be deleted.
+ * @apiParam {Number} isbn The ISBN of the book to be deleted.
  *
  * @apiSuccess (200: OK) {String} message "Book with ISBN <code>isbn</code> has been successfully deleted."
  *
