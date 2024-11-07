@@ -62,7 +62,7 @@ const isValidNewPassword = (newPassword: string): boolean =>
  * @apiError (400: Invalid Username) {String} message "Invalid Username - please refer to registration documentation"
  * @apiError (400: Invalid NewPassword) {String} message "Invalid New Password  - please refer to documentation"
  * @apiError (400: Invalid ConfirmPassword) {String} message "Invalid Confirmation Password  - please refer to documentation"
- * @apiError (400: Invalid OldPassword) {String} message "Invalid Old Password  - please refer to documentation"
+ * @apiError (400: Invalid OldPassword) {String} message "Password is not correct for User"
  * @apiError (404: User does not exist) {String} message "User does not exist in the Database"
  */
 changePasswordRouter.put(
@@ -85,12 +85,20 @@ changePasswordRouter.put(
     },
     (request: Request, response: Response, next: NextFunction) => {
         if(isValidNewPassword(request.body.newPassword)) {
-            next();
+            if(request.body.newPassword == request.body.confirmNewPassword){
+                next();
+                return;
+            } else {
+                response.status(400).send({
+                    message:
+                        'The passwords do not match',
+                }); 
+            }
             return;
         } else {
             response.status(400).send({
                 message:
-                    'Invalid New Password  - please refer to documentation',
+                    'Invalid new password  - please refer to documentation',
             }); 
             return;
         }
@@ -107,7 +115,14 @@ changePasswordRouter.put(
             .then((result) => {
                 if (result.rows.length === 0) {
                     response.status(404).send({
-                        message: 'User does not exist within the database with the provided username',
+                        message: 'User does not exist',
+                    });
+                    return;
+                } else if (result.rowCount > 1) {
+                    //log the error
+                    console.error('DB Query error on sign in: too many result returned');
+                    response.status(500).send({
+                        message: 'server error - contact support',
                     });
                     return;
                 }
@@ -116,7 +131,7 @@ changePasswordRouter.put(
                 const { account_id, salted_hash, salt } = result.rows[0];
                 
                 // Verify the provided password with the stored hash and salt
-                const providedHash = generateHash(request.body.password, salt);
+                const providedHash = generateHash(request.body.oldPassword, salt);
                 if (providedHash !== salted_hash) {
                     response.status(400).send({
                         message: 'Invalid old password',
