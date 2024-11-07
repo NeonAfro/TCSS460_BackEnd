@@ -29,6 +29,10 @@ const format = (row) => ({
     },
 });
 
+interface IBookRequest extends Request {
+    body: IBook;
+}
+
 /**
  * @apiDefine DBError
  * @apiError (500: Database Error) {String} message "server error - contact support"
@@ -58,6 +62,14 @@ const format = (row) => ({
  * @api {get} /book/all Request to get all books
  * @apiName GetAllBooks
  * @apiGroup book
+ *
+ * @apiQuery {number} limit the number of entry objects to return. Note, if a value less than
+ * 0 is provided or a non-numeric value is provided or no value is provided, the default limit
+ * amount of 10 will be used.
+ *
+ * @apiQuery {number} offset the number to offset the lookup of entry objects to return. Note,
+ * if a value less than 0 is provided or a non-numeric value is provided or no value is provided,
+ * the default offset of 0 will be used.
  *
  * @apiSuccess (200: OK) {Object[]} entries List of all book entries.
  * @apiSuccess (200: OK) {Number} entries.id Unique identifier of the book.
