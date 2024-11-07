@@ -59,9 +59,11 @@ const isValidNewPassword = (newPassword: string): boolean =>
  * @apiBody {String} confirmNewPassword confirmation of new password
  * 
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
- * @apiError (400: Invalid Username) {String} message "Invalid or missing username  - please refer to registration documentation"
- * @apiError (400: Invalid NewPassword) {String} message "Invalid or missing new password  - please refer to documentation"
- * @apiError (400: Invalid ConfirmPassword) {String} message "Invalid or missing confirmation password  - please refer to documentation"
+ * @apiError (400: Invalid Username) {String} message "Invalid Username - please refer to registration documentation"
+ * @apiError (400: Invalid NewPassword) {String} message "Invalid New Password  - please refer to documentation"
+ * @apiError (400: Invalid ConfirmPassword) {String} message "Invalid Confirmation Password  - please refer to documentation"
+ * @apiError (400: Invalid OldPassword) {String} message "Invalid Old Password  - please refer to documentation"
+ * @apiError (404: User does not exist) {String} message "User does not exist in the Database"
  */
 changePasswordRouter.put(
     '/changePassword',
@@ -70,7 +72,7 @@ changePasswordRouter.put(
     //In js, empty strings or null values evaulte to false
     if ( // username, email, new password must be provided
         isStringProvided(request.body.username) &&
-        isStringProvided(request.body.password) &&
+        isStringProvided(request.body.oldPassword) &&
         isStringProvided(request.body.newPassword) &&
         isStringProvided(request.body.confirmNewPassword)
     ){
@@ -95,32 +97,43 @@ changePasswordRouter.put(
     },
     // Check if User exists within the database
     (request: IUserRequest, response: Response, next: NextFunction) => {
-        const theQuery = `
-            SELECT account_id FROM Account 
-            WHERE username = $1
-        `;
-        const values = [
-            request.body.username
-        ];
-        console.dir({ ...request.body, password: '******' });
+        const theQuery = `SELECT salted_hash, salt, Account_Credential.account_id, account.email, account.firstname, account.lastname, account.phone, account.username, account.account_role FROM Account_Credential
+        INNER JOIN Account ON
+        Account_Credential.account_id=Account.account_id 
+        WHERE Account.username=$1`;
+        const values = [request.body.username];
+    
         pool.query(theQuery, values)
             .then((result) => {
-                if(result.rows.length == 0){
-                    response.status(400).send({
-                        message: 'User does not exist within the database with the provided inputs'
-                    })
-                } else {
-                    request.id = result.rows[0].account_id;
-                    next();
+                if (result.rows.length === 0) {
+                    response.status(404).send({
+                        message: 'User does not exist within the database with the provided username',
+                    });
+                    return;
                 }
+    
+                // Retrieve the stored hash and salt
+                const { account_id, salted_hash, salt } = result.rows[0];
+                
+                // Verify the provided password with the stored hash and salt
+                const providedHash = generateHash(request.body.password, salt);
+                if (providedHash !== salted_hash) {
+                    response.status(400).send({
+                        message: 'Invalid old password',
+                    });
+                    return;
+                }
+    
+                // Password is correct, set the user id in the request and move to the next middleware
+                request.id = account_id;
+                next();
             })
             .catch((error) => {
-                    console.error('DB Query error on account retrieval');
-                    console.error(error);
-                    response.status(500).send({
-                        message: 'DB server error - contact support',
-                    });
-            
+                console.error('DB Query error on account retrieval');
+                console.error(error);
+                response.status(500).send({
+                    message: 'DB server error - contact support',
+                });
             });
     },
     (request: IUserRequest, response: Response) => {
