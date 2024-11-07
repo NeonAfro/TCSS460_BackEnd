@@ -74,7 +74,7 @@ changePasswordRouter.put(
         if (
             // username, email, new password must be provided
             isStringProvided(request.body.username) &&
-            isStringProvided(request.body.password) &&
+            isStringProvided(request.body.oldPassword) &&
             isStringProvided(request.body.newPassword) &&
             isStringProvided(request.body.confirmNewPassword)
         ) {
