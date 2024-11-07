@@ -38,7 +38,7 @@ const isValidNewPassword = (newPassword: string): boolean =>
     /[A-Z]/.test(newPassword);
 
 const isValidPhone = (phone: string): boolean =>
-    isStringProvided(phone) && phone.length >= 10;
+    isStringProvided(phone) && /^\d{3}-\d{3}-\d{4}$/.test(phone);
 
 const isValidEmail = (email: string): boolean =>
     isStringProvided(email) && email.includes('@');

@@ -56,8 +56,8 @@ const isValidNewPassword = (newPassword: string): boolean =>
  * @apiBody {String} newPassword a users new password
  * @apiBody {String} confirmNewPassword confirmation of new password
  *
- * @apiSuccess (Success 201) {string} accessToken a newly created JWT
- * @apiSuccess (Success 201) {number} id unique user id
+ * @apiSuccess (Success 201) {string} resetToken a newly created JWT
+ * @apiSuccess (Success 201) {string} The message confirming the change password request was successful
  * //old password is incorrect, confirm password is not the same.
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Invalid oldPassword) {String} message "Invalid old password  - please refer to documentation"
@@ -99,9 +99,7 @@ changePasswordRouter.put(
     // Check if User exists within the database
     (request: IUserRequest, response: Response, next: NextFunction) => {
         const theQuery = `
-            SELECT account_id FROM Account 
-            WHERE username = $1
-        `;
+            SELECT account_id, salted_hash, salt FROM Account_Credential WHERE username = $1`;
         const values = [request.body.username];
         console.dir({ ...request.body, password: '******' });
         pool.query(theQuery, values)
