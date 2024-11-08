@@ -446,14 +446,8 @@ function mwValidBookBody(
  * @apiBody {string} [message] An optional message or note associated with the book
  *
  * @apiSuccess (201: Created) {Object} entry the details of the newly created book entry
- * @apiSuccess (201: Created) {String} entry.title Title of the new book
- * @apiSuccess (201: Created) {String} entry.author Author of the new book
- * @apiSuccess (201: Created) {String} entry.date Publication date of the book
- * @apiSuccess (201: Created) {Number} entry.isbn ISBN number of the book
- * @apiSuccess (201: Created) {String} [entry.message] Optional message associated with the book
  *
- * @apiError (400: Bad Request) {String} message "Book with isbn already exists"
- * @apiError (400: Missing Parameters) {String} message "Missing required information - please refer to documentation"
+ * @apiError (400: Bad Request) {String} message "Book with isbn already exists or Missing required information"
  * @apiUse DBError
  */
 bookRouter.post(
