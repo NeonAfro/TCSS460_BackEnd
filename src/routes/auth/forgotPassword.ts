@@ -16,7 +16,7 @@ import {
 export interface Auth {
     email: string;
     password: string;
-} 
+}
 
 const isStringProvided = validationFunctions.isStringProvided;
 const generateHash = credentialingFunctions.generateHash;
@@ -28,44 +28,42 @@ export interface IUserRequest extends Request {
     id: number;
 }
 
-
 const isValidNewPassword = (newPassword: string): boolean =>
     newPassword.length >= 8 &&
     newPassword.length <= 24 &&
     /[!@#$%^&*()_+=-]/.test(newPassword) &&
     /\d/.test(newPassword) &&
-    /[a-z]/.test(newPassword) && 
+    /[a-z]/.test(newPassword) &&
     /[A-Z]/.test(newPassword);
 
 const isValidPhone = (phone: string): boolean =>
     /^\d{3}-\d{3}-\d{4}$/.test(phone);
 
-const isValidEmail = (email: string): boolean =>
-    email.includes('@');
+const isValidEmail = (email: string): boolean => email.includes('@');
 
 /**
  * @api {put} /forgotPassword Request to create new password
  *
  * @apiDescription Request to create new password (forgot password)
- * 
+ *
  * <ul> <b>Password:</b>
  *      <li> Must be between 8 to 24 characters long</li>
  *      <li> Must include both uppercase and lowercase letters </li>
  *      <li> Must contain at least one numeric digit and special character </li>
  * </ul>
- * 
+ *
  *
  * @apiName PutForgotPassword
  * @apiGroup Auth
  *
- * @apiBody {String} username a username *unique 
+ * @apiBody {String} username a username *unique
  * @apiBody {String} email a users email *unique
  * @apiBody {String} phone a users phonenumber *unique
  * @apiBody {String} newPassword a users new password
  * @apiBody {String} confirmNewPassword confirmation of new password
- * 
- * @apiSuccess (Success 201) {string} resetToken a newly created JWT
- * 
+ *
+ * @apiSuccess (201: Success) {string} resetToken a newly created JWT
+ *
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Password Mismatch) {String} message "The passwords do not match"
  * @apiError (400: Invalid Email) {String} message "Invalid or missing email - please refer to registration documentation"
@@ -76,57 +74,58 @@ const isValidEmail = (email: string): boolean =>
 forgotPasswordRouter.put(
     '/forgotPassword',
     (request: Request, response: Response, next: NextFunction) => {
-    //Verify that the caller supplied all the parameters
-    //In js, empty strings or null values evaulte to false
-    if ( // username, email, new password must be provided
-        isStringProvided(request.body.username) &&
-        isStringProvided(request.body.email) &&
-        isStringProvided(request.body.newPassword) &&
-        isStringProvided(request.body.confirmNewPassword)&&
-        isStringProvided(request.body.phone)
-    ){
-        next();
-    } else{
-        response.status(400).send({
-            message: 'Missing required information',
-        });
-    }
+        //Verify that the caller supplied all the parameters
+        //In js, empty strings or null values evaulte to false
+        if (
+            // username, email, new password must be provided
+            isStringProvided(request.body.username) &&
+            isStringProvided(request.body.email) &&
+            isStringProvided(request.body.newPassword) &&
+            isStringProvided(request.body.confirmNewPassword) &&
+            isStringProvided(request.body.phone)
+        ) {
+            next();
+        } else {
+            response.status(400).send({
+                message: 'Missing required information',
+            });
+        }
     },
     (request: Request, response: Response, next: NextFunction) => {
-        if(isValidNewPassword(request.body.newPassword)) {
-            if(request.body.newPassword == request.body.confirmNewPassword){
+        if (isValidNewPassword(request.body.newPassword)) {
+            if (request.body.newPassword == request.body.confirmNewPassword) {
                 next();
                 return;
             } else {
                 response.status(400).send({
-                    message:
-                        'The passwords do not match',
-                }); 
+                    message: 'The passwords do not match',
+                });
             }
             return;
         } else {
             response.status(400).send({
                 message:
                     'Invalid new password  - please refer to documentation',
-            }); 
-            return;
-        }
-    }, 
-    (request: Request, response: Response, next: NextFunction) => {
-        if(isValidEmail(request.body.email)) next();
-        else {
-            response.status(400).send({
-                message: 'Invaid email - please refer to registration documentation',
             });
             return;
         }
-    }
-    ,
-    (request: Request, response: Response, next: NextFunction) => { 
-        if(isValidPhone(request.body.phone)) next();
+    },
+    (request: Request, response: Response, next: NextFunction) => {
+        if (isValidEmail(request.body.email)) next();
         else {
             response.status(400).send({
-                message: 'Invaid phone number - please refer to registration documentation',
+                message:
+                    'Invaid email - please refer to registration documentation',
+            });
+            return;
+        }
+    },
+    (request: Request, response: Response, next: NextFunction) => {
+        if (isValidPhone(request.body.phone)) next();
+        else {
+            response.status(400).send({
+                message:
+                    'Invaid phone number - please refer to registration documentation',
             });
             return;
         }
@@ -140,32 +139,34 @@ forgotPasswordRouter.put(
         const values = [
             request.body.username,
             request.body.email,
-            request.body.phone
+            request.body.phone,
         ];
         console.dir({ ...request.body, password: '******' });
         pool.query(theQuery, values)
             .then((result) => {
-                if(result.rows.length == 0){
+                if (result.rows.length == 0) {
                     response.status(404).send({
-                        message: 'User does not exist within the database with the provided inputs'
-                    })
+                        message:
+                            'User does not exist within the database with the provided inputs',
+                    });
                 } else {
                     request.id = result.rows[0].account_id;
                     next();
                 }
             })
             .catch((error) => {
-                    console.error('DB Query error on account retrieval');
-                    console.error(error);
-                    response.status(500).send({
-                        message: 'DB server error - contact support',
-                    });
-            
+                console.error('DB Query error on account retrieval');
+                console.error(error);
+                response.status(500).send({
+                    message: 'DB server error - contact support',
+                });
             });
     },
     (request: IUserRequest, response: Response) => {
         if (!request.id) {
-            response.status(500).send({ message: 'Server error - contact support' });
+            response
+                .status(500)
+                .send({ message: 'Server error - contact support' });
             return;
         }
 
