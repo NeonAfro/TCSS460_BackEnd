@@ -160,7 +160,7 @@ bookRouter.get('/all', async (request: Request, response: Response) => {
  * @apiSuccess (200: OK) {Object[]} entry List of book objects by the specified author.
  *
  * @apiError (404: Name Not Found) {string} message "Author not found"
- * 
+ *
  * @apiError (500: Internal Server Error) {string} message "Error executing query: {error}"
  * @apiUse DBError
  */
@@ -211,7 +211,7 @@ bookRouter.get(
  * @apiSuccess (200: OK) {Object} entry The book object containing information of the book with the specified ISBN.
  *
  * @apiError (404: Not Found) {string} message "ISBN not found"
- * 
+ *
  * @apiError (500: Internal Server Error) {string} message "Error executing query: {error}"
  * @apiUse DBError
  */
@@ -259,7 +259,7 @@ bookRouter.get('/isbn/:isbn', async (request: Request, response: Response) => {
  * @apiSuccess (200: OK) {Object} entry The book object containing information of the book with the specified title.
  *
  * @apiError (404: Not Found) {string} message "Title not found"
- * 
+ *
  * @apiError (500: Interal Server Error) {string} message "Error executing query: {error}"
  * @apiUse DBError
  */
@@ -310,7 +310,7 @@ bookRouter.get(
  * @apiSuccess (200: OK) {Object[]} entry List of book objects with the specified rating.
  *
  * @apiError (404: Not Found) {string} message "Books with given rating not found"
- * 
+ *
  * @apiError (500: Internal Server Error) {string} message "Error executing query: {error}"
  * @apiUse DBError
  */
@@ -368,7 +368,7 @@ bookRouter.get(
  * @apiSuccess (200: OK) {String[]} entries The aggregate of all entries with the specified year.
  *
  * @apiError (404: Not Found) {String} message "No Books with the publication year given was found"
- * 
+ *
  * @apiError (500: Internal Server Error) {String} message "Error executing query: {error}"
  * @apiUse DBError
  */
@@ -456,6 +456,11 @@ function mwValidBookBody(
  * @apiBody {string} [message] An optional message or note associated with the book
  *
  * @apiSuccess (201: Created) {Object} entry the details of the newly created book entry
+ * @apiSuccess (201: Created) {String} entry.title Title of the new book
+ * @apiSuccess (201: Created) {String} entry.author Author of the new book
+ * @apiSuccess (201: Created) {String} entry.date Publication date of the book
+ * @apiSuccess (201: Created) {Number} entry.isbn ISBN number of the book
+ * @apiSuccess (201: Created) {String} [entry.message] Optional message associated with the book
  *
  * @apiError (400: Bad Request) {String} message "Book with isbn already exists or Missing required information"
  * @apiUse DBError
@@ -677,7 +682,7 @@ function mwValidBookDeleteISBN(
  * @apiError (404: Not Found) {String} message "Book not found" if no book with the specified ISBN exists.
  * @apiError (400: Bad Request) {String} message "Invalid or missing ISBN - please refer to documentation" if the ISBN parameter is missing or invalid.
  * @apiError (500: Internal Server Error) {String} message "Error exeuting query: {error}"
- * 
+ *
  * @apiUse DBError
  */
 bookRouter.delete(
