@@ -659,7 +659,6 @@ bookRouter.put(
  * @apiUse DBError
  */
 bookRouter.delete('/:isbn', async (request: Request, response: Response) => {
-    // Implementation here
     try {
         const { isbn } = request.params;
 
@@ -696,7 +695,7 @@ bookRouter.delete('/:isbn', async (request: Request, response: Response) => {
 });
 
 /**
- * @api {delete} /book Request to delete a range of books by year or ISBN
+ * @api {delete} /book Request to delete a range of books by ...
  *
  * @apiDescription Request to delete a range or series of book entries by specifying start and end dates.
  *
