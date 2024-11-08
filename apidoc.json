@@ -8,6 +8,7 @@
         "Register",
         "Login",
         "Change Password",
+        "Forgot Password",
         "JWT Test",
         "GetAllMessages",
         "GetAllMessagesPri",
