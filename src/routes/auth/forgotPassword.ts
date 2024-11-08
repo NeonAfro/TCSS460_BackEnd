@@ -42,9 +42,9 @@ const isValidPhone = (phone: string): boolean =>
 const isValidEmail = (email: string): boolean => email.includes('@');
 
 /**
- * @api {put} /forgotPassword Request to create new password
+ * @api {put} /forgotPassword Request for Forgot Password
  *
- * @apiDescription Request to create new password (forgot password)
+ * @apiDescription Request to change old password
  *
  * <ul> <b>Password:</b>
  *      <li> Must be between 8 to 24 characters long</li>
@@ -62,7 +62,8 @@ const isValidEmail = (email: string): boolean => email.includes('@');
  * @apiBody {String} newPassword a users new password
  * @apiBody {String} confirmNewPassword confirmation of new password
  *
- * @apiSuccess (201: Success) {string} resetToken a newly created JWT
+ * @apiSuccess (200: Success) {string} resetToken a newly created JWT
+ * @apiSuccess (200: Success) {string} message "Password updated successfully"
  *
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Password Mismatch) {String} message "The passwords do not match"
@@ -70,6 +71,12 @@ const isValidEmail = (email: string): boolean => email.includes('@');
  * @apiError (400: Invalid PhoneNumber) {String} message "Invalid phone number - please refer to registration documentation"
  * @apiError (400: Invalid NewPassword) {String} message "Invalid new password - please refer to documentation"
  * @apiError (404: User does not exist) {String} message "User does not exist within the Database"
+ * 
+ * @apiError (500: DB Query Error) {String} message "Unexpected issue on account retrieval for DB"
+ * @apiError (500: Server Error) {String} message "Unexpected issue on retrieving request"
+ * @apiError (500: Password Update Error) {String} message "Error updating password in the database"
+ * 
+ * @apiUse DBError
  */
 forgotPasswordRouter.put(
     '/forgotPassword',
@@ -147,7 +154,7 @@ forgotPasswordRouter.put(
                 if (result.rows.length == 0) {
                     response.status(404).send({
                         message:
-                            'User does not exist within the database with the provided inputs',
+                            'User does not exist',
                     });
                 } else {
                     request.id = result.rows[0].account_id;
@@ -155,10 +162,10 @@ forgotPasswordRouter.put(
                 }
             })
             .catch((error) => {
-                console.error('DB Query error on account retrieval');
+                console.error('DB Query Error');
                 console.error(error);
                 response.status(500).send({
-                    message: 'DB server error - contact support',
+                    message: 'DB Query Error',
                 });
             });
     },
@@ -166,7 +173,7 @@ forgotPasswordRouter.put(
         if (!request.id) {
             response
                 .status(500)
-                .send({ message: 'Server error - contact support' });
+                .send({ message: 'Server Error' });
             return;
         }
 
@@ -192,10 +199,10 @@ forgotPasswordRouter.put(
                 });
             })
             .catch((error) => {
-                console.error('Error updating password in the database');
+                console.error('Password Update Error');
                 console.error(error);
                 response.status(500).send({
-                    message: 'Server error - contact support',
+                    message: 'Password Update Error',
                 });
             });
     }
