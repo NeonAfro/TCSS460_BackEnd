@@ -95,7 +95,7 @@ const emailMiddlewareCheck = (
  * </ul>
  * 
  * @apiName PostRegister
- * @apiGroup Auth
+ * @apiGroup Register
  *
  * @apiBody {String} firstname a users first name
  * @apiBody {String} lastname a users last name

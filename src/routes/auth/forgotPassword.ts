@@ -54,7 +54,7 @@ const isValidEmail = (email: string): boolean => email.includes('@');
  *
  *
  * @apiName PutForgotPassword
- * @apiGroup Auth
+ * @apiGroup Change Password
  *
  * @apiBody {String} username a username *unique
  * @apiBody {String} email a users email *unique
