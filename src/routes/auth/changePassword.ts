@@ -38,7 +38,7 @@ const isValidNewPassword = (newPassword: string): boolean =>
     /[A-Z]/.test(newPassword);
 
 /**
- * @api {put} /changePassword Request to create new password
+ * @api {put} /changePassword Request for Change Password
  *
  * @apiDescription Request to Change Password
  *
