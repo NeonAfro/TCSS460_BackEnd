@@ -68,10 +68,14 @@ const isValidEmail = (email: string): boolean =>
  * 
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Password Mismatch) {String} message "The passwords do not match"
+ * @apiError (400: Invalid NewPassword) {String} message "Invalid new password - please refer to documentation"
  * @apiError (400: Invalid Email) {String} message "Invalid or missing email - please refer to registration documentation"
  * @apiError (400: Invalid PhoneNumber) {String} message "Invalid phone number - please refer to registration documentation"
- * @apiError (400: Invalid NewPassword) {String} message "Invalid new password - please refer to documentation"
  * @apiError (404: User does not exist) {String} message "User does not exist within the Database"
+ * 
+ * @apiError (500: DB Query Error) {String} message "malformed DB query"
+ * @apiError (500: Server Request Error) {String} message " Request.id not set during middleware"
+ * @apiError (500: DB Update Error) {String} message "DB update failed"
  */
 forgotPasswordRouter.put(
     '/forgotPassword',
@@ -158,14 +162,14 @@ forgotPasswordRouter.put(
                     console.error('DB Query error on account retrieval');
                     console.error(error);
                     response.status(500).send({
-                        message: 'DB server error - contact support',
+                        message: 'DB Server Error',
                     });
             
             });
     },
     (request: IUserRequest, response: Response) => {
         if (!request.id) {
-            response.status(500).send({ message: 'Server error - contact support' });
+            response.status(500).send({ message: 'Server Request Error' });
             return;
         }
 
@@ -194,7 +198,7 @@ forgotPasswordRouter.put(
                 console.error('Error updating password in the database');
                 console.error(error);
                 response.status(500).send({
-                    message: 'Server error - contact support',
+                    message: 'DB Update Error',
                 });
             });
     }
