@@ -95,9 +95,9 @@ interface IBookRequest extends Request {
  * @apiSuccess (200: OK) {number} pagination.offset the number used to offset the lookup of entry objects.
  * @apiSuccess (200: OK) {number} pagination.nextPage the offset that should be used on a preceding call to this route.
  *
- * @apiuse ForbiddenJWT
- * @apiuse InvalidJWT
- * @apiuse DBError
+ * @apiUse ForbiddenJWT
+ * @apiUse InvalidJWT
+ * @apiUse DBError
  *
  */
 
