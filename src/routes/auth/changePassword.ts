@@ -40,7 +40,7 @@ const isValidNewPassword = (newPassword: string): boolean =>
 /**
  * @api {put} /changePassword Request to create new password
  *
- * @apiDescription Request to create new password (known password)
+ * @apiDescription Request to Change Password
  *
  * <ul> <b>Password:</b>
  *      <li> Must be between 8 to 24 characters long</li>
