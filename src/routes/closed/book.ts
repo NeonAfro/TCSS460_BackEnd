@@ -161,24 +161,18 @@ bookRouter.get('/:author', async (request: Request, response: Response) => {
     // Implementation here
     try {
         const theQuery = `SELECT * 
-        FROM books WHERE authors=$3 
-        ORDER BY id
-        LIMIT $1
-        OFFSET $2`;
+        FROM books WHERE authors=$1 
+        ORDER BY id`;
 
-        const limit: number =
-            isNumberProvided(request.query.limit) && +request.query.limit > 0
-                ? +request.query.limit
-                : 10;
-        const offset: number =
-            isNumberProvided(request.query.offset) && +request.query.offset >= 0
-                ? +request.query.offset
-                : 0;
-
-        const author = request.query.authors;
-        const values = [limit, offset, author];
+        const values = [request.params.author];
 
         const { rows } = await pool.query(theQuery, values);
+
+        if(rows.length === 0) {
+            response.status(404).send({
+                message: "Author not Found"
+            })
+        }
 
         const result = await pool.query(
             'SELECT count(*) AS exact_count FROM books;'
@@ -189,13 +183,7 @@ bookRouter.get('/:author', async (request: Request, response: Response) => {
         console.log('rows:', formattedRows);
 
         response.send({
-            entries: rows.map(format),
-            pagination: {
-                totalRecords: count,
-                limit,
-                offset,
-                nextPage: limit + offset,
-            },
+            entries: rows.map(format)
         });
     } catch (error) {
         console.error('Error executing query:', error);
