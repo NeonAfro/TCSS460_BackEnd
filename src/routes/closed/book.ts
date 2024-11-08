@@ -160,6 +160,8 @@ bookRouter.get('/all', async (request: Request, response: Response) => {
  * @apiSuccess (200: OK) {Object[]} entry List of book objects by the specified author.
  *
  * @apiError (404: Name Not Found) {string} message "Author not found"
+ * 
+ * @apiError (500: Internal Server Error) {string} message "Error executing query: {error}"
  * @apiUse DBError
  */
 bookRouter.get(
@@ -191,7 +193,7 @@ bookRouter.get(
         } catch (error) {
             console.error('Error executing query:', error);
             response.status(500).send({
-                message: 'Internal server error',
+                message: 'Internal Server Error',
             });
         }
     }
@@ -209,6 +211,8 @@ bookRouter.get(
  * @apiSuccess (200: OK) {Object} entry The book object containing information of the book with the specified ISBN.
  *
  * @apiError (404: Name Not Found) {string} message "ISBN not found"
+ * 
+ * @apiError (500: Internal Server Error) {string} message "Error executing query: {error}"
  * @apiUse DBError
  */
 bookRouter.get('/isbn/:isbn', async (request: Request, response: Response) => {
@@ -238,7 +242,7 @@ bookRouter.get('/isbn/:isbn', async (request: Request, response: Response) => {
     } catch (error) {
         console.error('Error executing query:', error);
         response.status(500).send({
-            message: 'Internal server error',
+            message: 'Internal Server Error',
         });
     }
 });
@@ -255,6 +259,8 @@ bookRouter.get('/isbn/:isbn', async (request: Request, response: Response) => {
  * @apiSuccess (200: OK) {Object} entry The book object containing information of the book with the specified title.
  *
  * @apiError (404: Name Not Found) {string} message "Title not found"
+ * 
+ * @apiError (500: Interal Server Error) {string} message "Error executing query: {error}"
  * @apiUse DBError
  */
 bookRouter.get(
@@ -286,7 +292,7 @@ bookRouter.get(
         } catch (error) {
             console.error('Error executing query:', error);
             response.status(500).send({
-                message: 'Internal server error',
+                message: 'Internal Server Error',
             });
         }
     }
@@ -304,6 +310,8 @@ bookRouter.get(
  * @apiSuccess (200: OK) {Object[]} entry List of book objects with the specified rating.
  *
  * @apiError (404: Not Found) {string} message "Books with given rating not found"
+ * 
+ * @apiError (500: Internal Server Error) {string} message "Error executing query: {error}"
  * @apiUse DBError
  */
 bookRouter.get(
@@ -339,7 +347,7 @@ bookRouter.get(
         } catch (error) {
             console.error('Error executing query:', error);
             response.status(500).send({
-                message: 'Internal server error',
+                message: 'Internal Server Error',
             });
         }
     }
@@ -360,6 +368,8 @@ bookRouter.get(
  * @apiSuccess (200: OK) {String[]} entries The aggregate of all entries with the specified year.
  *
  * @apiError (404: Not Found) {String} message "No Books with the publication year given was found"
+ * 
+ * @apiError (500: Internal Server Error) {String} message "Error executing query: {error}"
  * @apiUse DBError
  */
 bookRouter.get('/year', async (request: Request, response: Response) => {
@@ -388,7 +398,7 @@ bookRouter.get('/year', async (request: Request, response: Response) => {
     } catch (error) {
         console.error('Error executing query:', error);
         response.status(500).send({
-            message: 'Internal server error',
+            message: 'Internal Server Error',
         });
     }
 });
@@ -627,7 +637,7 @@ bookRouter.put(
                 return;
             }
 
-            response.send({
+            response.status(200).send({
                 message: 'Book ratings updated successfully',
                 book: rows[0],
             });
