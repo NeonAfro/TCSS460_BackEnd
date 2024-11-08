@@ -154,7 +154,7 @@ bookRouter.get('/all', async (request: Request, response: Response) => {
  * @apiGroup book
  *
  * @apiUse JWT
- * 
+ *
  * @apiParam {String} author The author to look up.
  *
  * @apiSuccess (200: OK) {Object[]} entry List of book objects by the specified author.
@@ -162,45 +162,48 @@ bookRouter.get('/all', async (request: Request, response: Response) => {
  * @apiError (404: Name Not Found) {string} message "Author not found"
  * @apiUse DBError
  */
-bookRouter.get('/author/:author', async (request: Request, response: Response) => {
-    // Implementation here
-    try {
-        const theQuery = `SELECT * 
+bookRouter.get(
+    '/author/:author',
+    async (request: Request, response: Response) => {
+        // Implementation here
+        try {
+            const theQuery = `SELECT * 
         FROM books WHERE authors=$1 
         ORDER BY id`;
 
-        const values = [request.query.author];
+            const values = [request.query.author];
 
-        const { rows } = await pool.query(theQuery, values);
+            const { rows } = await pool.query(theQuery, values);
 
-        if (rows.length === 0) {
-            response.status(404).send({
-                message: 'Author not Found',
+            if (rows.length === 0) {
+                response.status(404).send({
+                    message: 'Author not Found',
+                });
+                return;
+            }
+
+            const formattedRows = rows.map(format);
+            console.log('rows:', formattedRows);
+
+            response.status(200).send({
+                entries: rows.map(format),
             });
-            return;
+        } catch (error) {
+            console.error('Error executing query:', error);
+            response.status(500).send({
+                message: 'Internal server error',
+            });
         }
-
-        const formattedRows = rows.map(format);
-        console.log('rows:', formattedRows);
-
-        response.status(200).send({
-            entries: rows.map(format),
-        });
-    } catch (error) {
-        console.error('Error executing query:', error);
-        response.status(500).send({
-            message: 'Internal server error',
-        });
     }
-});
+);
 
 /**
  * @api {get} /book/:isbn Request to get all books by ISBN
  * @apiName GetBooksByISBN
  * @apiGroup book
- * 
+ *
  * @apiUse JWT
- * 
+ *
  * @apiParam {String} isbn The ISBN to look up.
  *
  * @apiSuccess (200: OK) {Object} entry The book object containing information of the book with the specified ISBN.
@@ -225,7 +228,7 @@ bookRouter.get('/isbn/:isbn', async (request: Request, response: Response) => {
             });
             return;
         }
-        
+
         const formattedRows = rows.map(format);
         console.log('rows:', formattedRows);
 
@@ -244,9 +247,9 @@ bookRouter.get('/isbn/:isbn', async (request: Request, response: Response) => {
  * @api {get} /book/:title Request to get all books by Title
  * @apiName GetBooksByTitle
  * @apiGroup book
- * 
+ *
  * @apiUse JWT
- * 
+ *
  * @apiParam {String} title The title to look up.
  *
  * @apiSuccess (200: OK) {Object} entry The book object containing information of the book with the specified title.
@@ -254,45 +257,48 @@ bookRouter.get('/isbn/:isbn', async (request: Request, response: Response) => {
  * @apiError (404: Name Not Found) {string} message "Title not found"
  * @apiUse DBError
  */
-bookRouter.get('/title/:title', async (request: Request, response: Response) => {
-    // Implementation here
-    try {
-        const theQuery = `SELECT * 
+bookRouter.get(
+    '/title/:title',
+    async (request: Request, response: Response) => {
+        // Implementation here
+        try {
+            const theQuery = `SELECT * 
         FROM books WHERE title ILIKE $1
         ORDER BY id`;
 
-        const values = [`%${request.params.title}%`];
+            const values = [`%${request.params.title}%`];
 
-        const { rows } = await pool.query(theQuery, values);
+            const { rows } = await pool.query(theQuery, values);
 
-        if (rows.length === 0) {
-            response.status(404).send({
-                message: 'Title not found',
+            if (rows.length === 0) {
+                response.status(404).send({
+                    message: 'Title not found',
+                });
+                return;
+            }
+
+            const formattedRows = rows.map(format);
+            console.log('rows:', formattedRows);
+
+            response.send({
+                entries: rows.map(format),
             });
-            return;
+        } catch (error) {
+            console.error('Error executing query:', error);
+            response.status(500).send({
+                message: 'Internal server error',
+            });
         }
-        
-        const formattedRows = rows.map(format);
-        console.log('rows:', formattedRows);
-
-        response.send({
-            entries: rows.map(format),
-        });
-    } catch (error) {
-        console.error('Error executing query:', error);
-        response.status(500).send({
-            message: 'Internal server error',
-        });
     }
-});
+);
 
 /**
  * @api {get} /book/:rating Request to get all books by rating
  * @apiName GetBooksByRating
  * @apiGroup book
- * 
+ *
  * @apiUse JWT
- * 
+ *
  * @apiParam {String} rating The rating to look up.
  *
  * @apiSuccess (200: OK) {Object[]} entry List of book objects with the specified rating.
@@ -300,41 +306,44 @@ bookRouter.get('/title/:title', async (request: Request, response: Response) => 
  * @apiError (404: Not Found) {string} message "Books with given rating not found"
  * @apiUse DBError
  */
-bookRouter.get('/rating/:rating', async (request: Request, response: Response) => {
-    // Implementation here
-    try {
-        const theQuery = `SELECT * 
+bookRouter.get(
+    '/rating/:rating',
+    async (request: Request, response: Response) => {
+        // Implementation here
+        try {
+            const theQuery = `SELECT * 
         FROM books WHERE rating_avg BETWEEN $1 AND $2
         ORDER BY id`;
 
-        const value = parseFloat(request.params.rating);
-        const lowerBound = value - 0.2;
-        const upperBound = value + 0.2;
+            const value = parseFloat(request.params.rating);
+            const lowerBound = value - 0.2;
+            const upperBound = value + 0.2;
 
-        const values = [lowerBound, upperBound];
+            const values = [lowerBound, upperBound];
 
-        const { rows } = await pool.query(theQuery, values);
+            const { rows } = await pool.query(theQuery, values);
 
-        if (rows.length === 0) {
-            response.status(404).send({
-                message: 'Books with given rating not found',
+            if (rows.length === 0) {
+                response.status(404).send({
+                    message: 'Books with given rating not found',
+                });
+                return;
+            }
+
+            const formattedRows = rows.map(format);
+            console.log('rows:', formattedRows);
+
+            response.send({
+                entries: rows.map(format),
             });
-            return;
+        } catch (error) {
+            console.error('Error executing query:', error);
+            response.status(500).send({
+                message: 'Internal server error',
+            });
         }
-        
-        const formattedRows = rows.map(format);
-        console.log('rows:', formattedRows);
-
-        response.send({
-            entries: rows.map(format),
-        });
-    } catch (error) {
-        console.error('Error executing query:', error);
-        response.status(500).send({
-            message: 'Internal server error',
-        });
     }
-});
+);
 
 /**
  * @api {get} /book Request to retrieve entries by year
@@ -343,9 +352,9 @@ bookRouter.get('/rating/:rating', async (request: Request, response: Response) =
  *
  * @apiName GetAllBooksByYear
  * @apiGroup book
- * 
+ *
  * @apiUse JWT
- * 
+ *
  * @apiQuery {Number} year The year in which to retrieve all entries.
  *
  * @apiSuccess (200: OK) {String[]} entries The aggregate of all entries with the specified year.
@@ -369,7 +378,7 @@ bookRouter.get('/year', async (request: Request, response: Response) => {
                 message: 'No Books with the publication year given was found',
             });
         }
-        
+
         const formattedRows = rows.map(format);
         console.log('rows:', formattedRows);
 
@@ -427,7 +436,7 @@ function mwValidBookBody(
  *
  * @apiName PostBook
  * @apiGroup book
- * 
+ *
  * @apiUse JWT
  *
  * @apiBody {string} title the new book title
@@ -522,9 +531,9 @@ function mwValidBookRating(
  *
  * @apiName PutBookRating
  * @apiGroup book
- * 
+ *
  * @apiUse JWT
- * 
+ *
  * @apiBody {String} title the title of the book entry
  * @apiBody {String} author the author of the book entry
  * @apiBody {number} rating the rating that the book rating will be updated to
@@ -542,6 +551,7 @@ function mwValidBookRating(
  */
 bookRouter.put(
     '/:id',
+    mwValidBookRating,
     async (request: Request, response: Response) => {
         // TODO: we come back to this (completely from chatGPT)
         const { id } = request.params;
@@ -596,7 +606,7 @@ bookRouter.put(
 
         // Update the rating count based on provided fields
         updates.push(`rating_count = rating_count + ${values.join(' + ')}`);
-        
+
         // Calculate average rating using the updated rating values
         updates.push(`
             rating_avg = (
@@ -630,7 +640,6 @@ bookRouter.put(
     }
 );
 
-
 /**
  * @api {delete} /book/:isbn Request to delete a book by ISBN
  *
@@ -638,7 +647,7 @@ bookRouter.put(
  *
  * @apiName DeleteBooksByISBN
  * @apiGroup book
- * 
+ *
  * @apiUse JWT
  *
  * @apiParam {Number} isbn The ISBN of the book to be deleted.
@@ -652,9 +661,9 @@ bookRouter.put(
 bookRouter.delete('/:isbn', async (request: Request, response: Response) => {
     // Implementation here
     try {
-        const {isbn} = request.params;
+        const { isbn } = request.params;
 
-        if(!isbn) {
+        if (!isbn) {
             response.status(400).send({
                 message: 'ISBN not provided',
             });
@@ -693,9 +702,9 @@ bookRouter.delete('/:isbn', async (request: Request, response: Response) => {
  *
  * @apiName DeleteBooksByRange
  * @apiGroup book
- * 
+ *
  * @apiUse JWT
- * 
+ *
  * @apiQuery {String} [startDate] The publication date to start deleting books from, in YYYY-MM-DD format.
  * @apiQuery {String} [endDate] The publication date to delete books until, in YYYY-MM-DD format.
  *
