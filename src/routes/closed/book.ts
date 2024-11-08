@@ -732,21 +732,27 @@ function mwValidBookDeleteSeries(
 }
 
 /**
- * @api {delete} /book Request to delete a range of books by series name.
+ * @api {delete} /book Delete a range of books by series name or a standalone book by exact title.
  *
- * @apiDescription Request to delete a range or series of book entries by specifying start and end dates.
+ * @apiDescription Deletes all books within the specified series by matching series titles that contain the given series name
+ * in parentheses, such as "(Series Name, #...)".
+ * If no series books are found, it attempts to delete a standalone book with the exact specified title.
  *
  * @apiName DeleteBooksBySeries
  * @apiGroup book
  *
  * @apiUse JWT
  *
- * @apiQuery {String} seriesName the name of the series to be deleted
+ * @apiQuery {String} seriesName The name of the series to be deleted or the exact title of a standalone book.
  *
  * @apiSuccess (200: OK) {String} message "Successfully deleted <code>count</code> books within the specified series"
+ * or "Successfully deleted the standalone book titled <code>seriesName</code>".
  *
- * @apiError (404: Not Found) {String} message "No books found in the specified series" if no books match the given criteria.
- * @apiError (400: Bad Request) {String} message "Invalid or missing parameters - please refer to documentation" if a series name is not provided or if the parameters are invalid.
+ * @apiError (404: Not Found) {String} message "No books found with the specified series name or title"
+ * if no matching books are found.
+ * @apiError (400: Bad Request) {String} message "Invalid or missing parameters - please refer to documentation"
+ * if the series name parameter is not provided or invalid.
+ * @apiError (500: Internal Server Error) {String} message "Internal server error" for unexpected database or server issues.
  * @apiUse DBError
  */
 bookRouter.delete(
@@ -762,23 +768,49 @@ bookRouter.delete(
                 });
             }
 
-            // Define the delete query
-            const theQuery =
-                'DELETE FROM books WHERE series_name = $1 RETURNING *'; // probably will delete things it shouldn't
+            // Define the delete query for series entries with pattern matching
+            const seriesQuery = `
+                DELETE FROM books 
+                WHERE title ILIKE '%(' || $1 || ', #%'
+                RETURNING *;
+            `;
 
-            // Execute the query, using seriesName as the parameter
-            const { rows } = await pool.query(theQuery, [seriesName]);
+            // Define the delete query for standalone books by exact title match and no parentheses
+            const standaloneQuery = `
+                DELETE FROM books 
+                WHERE title = $1
+                AND title NOT LIKE '%(%)%'
+                RETURNING *;
+            `;
 
-            // Check if any rows were deleted
-            if (rows.length === 0) {
-                return response.status(404).send({
-                    message: 'No books found in the specified series',
+            // Attempt to delete books as part of a series first
+            const { rows: seriesRows } = await pool.query(seriesQuery, [
+                seriesName,
+            ]);
+
+            if (seriesRows.length > 0) {
+                // Successfully deleted books in the series
+                return response.status(200).send({
+                    message: `Successfully deleted ${seriesRows.length} books within the specified series`,
                 });
             }
 
-            // Return success message and the count of deleted books
-            response.status(200).send({
-                message: `Successfully deleted ${rows.length} books within the specified series`,
+            // If no series books were found, attempt to delete a standalone book without parentheses
+            const { rows: standaloneRows } = await pool.query(standaloneQuery, [
+                seriesName,
+            ]);
+
+            if (standaloneRows.length > 0) {
+                // Successfully deleted a standalone book
+                return response.status(200).send({
+                    message: `Successfully deleted the standalone book titled "${seriesName}"`,
+                });
+            }
+
+            // If neither a series nor standalone book was found
+            return response.status(404).send({
+                message:
+                    'No books found with the specified series name or title',
             });
         } catch (error) {
             console.error('Error executing query:', error);
