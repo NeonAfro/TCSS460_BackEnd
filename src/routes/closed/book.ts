@@ -548,11 +548,11 @@ function mwValidBookRating(
  * @apiBody {number} rating the rating that the book rating will be updated to
  * @apiBody {string} [message] An optional message or note associated with the book rating
  *
- * @apiSuccess (204: OK) {Object} entry Details of the updated book entry.
- * @apiSuccess (204: OK) {String} entry.title The title of the updated book.
- * @apiSuccess (204: OK) {String} entry.author The author of the updated book.
- * @apiSuccess (204: OK) {Number} entry.rating The new rating of the book.
- * @apiSuccess (204: OK) {String} [entry.message] The optional message associated with the book rating.
+ * @apiSuccess (200: OK) {Object} entry Details of the updated book entry.
+ * @apiSuccess (200: OK) {String} entry.title The title of the updated book.
+ * @apiSuccess (200: OK) {String} entry.author The author of the updated book.
+ * @apiSuccess (200: OK) {Number} entry.rating The new rating of the book.
+ * @apiSuccess (200: OK) {String} [entry.message] The optional message associated with the book rating.
  *
  * @apiError (404: Not Found) {String} message "Book not found" if the specified book does not exist.
  * @apiError (400: Bad Request) {String} message "ISBN not provided"
