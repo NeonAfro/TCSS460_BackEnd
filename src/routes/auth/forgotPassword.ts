@@ -66,7 +66,7 @@ const isValidEmail = (email: string): boolean => email.includes('@');
  *
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Password Mismatch) {String} message "The passwords do not match"
- * @apiError (400: Invalid Email) {String} message "Invalid or missing email - please refer to registration documentation"
+ * @apiError (400: Invalid Email) {String} message "Invalid email - please refer to registration documentation"
  * @apiError (400: Invalid PhoneNumber) {String} message "Invalid phone number - please refer to registration documentation"
  * @apiError (400: Invalid NewPassword) {String} message "Invalid new password - please refer to documentation"
  * @apiError (404: User does not exist) {String} message "User does not exist within the Database"
