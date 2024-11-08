@@ -53,7 +53,7 @@ const isValidNewPassword = (newPassword: string): boolean =>
  * @apiGroup Auth
  *
  * @apiBody {String} username a username *unique
- * @apiBody {String} password a users current password
+ * @apiBody {String} oldPassword a users current password
  * @apiBody {String} newPassword a users new password
  * @apiBody {String} confirmNewPassword confirmation of new password
  *
