@@ -44,9 +44,9 @@ const isValidEmail = (email: string): boolean =>
     email.includes('@');
 
 /**
- * @api {put} /forgotPassword Request to create new password
+ * @api {put} /forgotPassword Request for Forgot Password
  *
- * @apiDescription Request to create new password (forgot password)
+ * @apiDescription Request to change password
  * 
  * <ul> <b>Password:</b>
  *      <li> Must be between 8 to 24 characters long</li>
@@ -64,7 +64,8 @@ const isValidEmail = (email: string): boolean =>
  * @apiBody {String} newPassword a users new password
  * @apiBody {String} confirmNewPassword confirmation of new password
  * 
- * @apiSuccess (Success 201) {string} resetToken a newly created JWT
+ * @apiSuccess (Success 200) {string} resetToken a newly created JWT
+ * @apiSuccess (Success 200) {string} message "Password updated successfully"
  * 
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Password Mismatch) {String} message "The passwords do not match"
