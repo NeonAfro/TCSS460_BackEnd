@@ -640,6 +640,23 @@ bookRouter.put(
     }
 );
 
+//middleware function for delte by ISBN function
+function mwValidBookDeleteISBN(
+    request: Request,
+    response: Response,
+    next: NextFunction
+) {
+    const { isbn } = request.params; // body or params?
+
+    if (!isNumberProvided(isbn) || isbn.toString().length !== 13) {
+        return response
+            .status(400)
+            .send({ message: 'ISBN must be a 13-digit number' });
+    }
+
+    next();
+}
+
 /**
  * @api {delete} /book/:isbn Request to delete a book by ISBN
  *
@@ -658,41 +675,61 @@ bookRouter.put(
  * @apiError (400: Bad Request) {String} message "Invalid or missing ISBN - please refer to documentation" if the ISBN parameter is missing or invalid.
  * @apiUse DBError
  */
-bookRouter.delete('/:isbn', async (request: Request, response: Response) => {
-    try {
-        const { isbn } = request.params;
+bookRouter.delete(
+    '/:isbn',
+    mwValidBookDeleteISBN,
+    async (request: Request, response: Response) => {
+        try {
+            const { isbn } = request.params;
 
-        if (!isbn) {
-            response.status(400).send({
-                message: 'ISBN not provided',
+            if (!isbn) {
+                response.status(400).send({
+                    message: 'ISBN not provided',
+                });
+                return;
+            }
+            const theQuery = 'DELETE FROM books WHERE isbn13=$1 RETURNING *';
+
+            const { rows } = await pool.query(theQuery, [isbn]);
+
+            if (rows.length === 0) {
+                response.status(404).send({
+                    message: 'Book not found',
+                });
+                return;
+            }
+            const formattedRows = rows.map(format);
+            console.log('rows:', formattedRows);
+
+            response.status(200).send({
+                entries: rows.map(format),
+                message: 'Book by ISBN has been successfully deleted',
             });
             return;
-        }
-        const theQuery = 'DELETE FROM books WHERE isbn13=$1 RETURNING *';
-
-        const { rows } = await pool.query(theQuery, [isbn]);
-
-        if (rows.length === 0) {
-            response.status(404).send({
-                message: 'Book not found',
+        } catch (error) {
+            console.error('Error executing query:', error);
+            response.status(500).send({
+                message: 'Internal server error',
             });
-            return;
         }
-        const formattedRows = rows.map(format);
-        console.log('rows:', formattedRows);
+    }
+);
 
-        response.status(200).send({
-            entries: rows.map(format),
-            message: 'Book by ISBN has been successfully deleted',
-        });
-        return;
-    } catch (error) {
-        console.error('Error executing query:', error);
-        response.status(500).send({
-            message: 'Internal server error',
+//middleware function to check validity of delete by series function
+function mwValidBookDeleteSeries(
+    request: Request,
+    response: Response,
+    next: NextFunction
+) {
+    const { seriesName } = request.params; // again, body or params? params right
+
+    if (!isStringProvided(seriesName)) {
+        response.status(400).send({
+            message: 'Series name is required',
         });
     }
-});
+    next();
+}
 
 /**
  * @api {delete} /book Request to delete a range of books by series name.
@@ -712,15 +749,44 @@ bookRouter.delete('/:isbn', async (request: Request, response: Response) => {
  * @apiError (400: Bad Request) {String} message "Invalid or missing parameters - please refer to documentation" if a series name is not provided or if the parameters are invalid.
  * @apiUse DBError
  */
-bookRouter.delete('/', (request: Request, response: Response) => {
-    try {
-        const { seriesName } = request.params;
-    } catch (error) {
-        console.error('Error executing query:', error);
-        response.status(500).send({
-            message: 'Internal server error',
-        });
+bookRouter.delete(
+    '/',
+    mwValidBookDeleteSeries,
+    async (request: Request, response: Response) => {
+        try {
+            const { seriesName } = request.query;
+
+            if (!seriesName) {
+                return response.status(400).send({
+                    message: 'Series name is required',
+                });
+            }
+
+            // Define the delete query
+            const theQuery =
+                'DELETE FROM books WHERE series_name = $1 RETURNING *';
+
+            // Execute the query, using seriesName as the parameter
+            const { rows } = await pool.query(theQuery, [seriesName]);
+
+            // Check if any rows were deleted
+            if (rows.length === 0) {
+                return response.status(404).send({
+                    message: 'No books found in the specified series',
+                });
+            }
+
+            // Return success message and the count of deleted books
+            response.status(200).send({
+                message: `Successfully deleted ${rows.length} books within the specified series`,
+            });
+        } catch (error) {
+            console.error('Error executing query:', error);
+            response.status(500).send({
+                message: 'Internal server error',
+            });
+        }
     }
-});
+);
 
 export { bookRouter };
