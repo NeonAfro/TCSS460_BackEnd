@@ -695,26 +695,32 @@ bookRouter.delete('/:isbn', async (request: Request, response: Response) => {
 });
 
 /**
- * @api {delete} /book Request to delete a range of books by ...
+ * @api {delete} /book Request to delete a range of books by series name.
  *
  * @apiDescription Request to delete a range or series of book entries by specifying start and end dates.
  *
- * @apiName DeleteBooksByRange
+ * @apiName DeleteBooksBySeries
  * @apiGroup book
  *
  * @apiUse JWT
  *
- * @apiQuery {String} [startDate] The publication date to start deleting books from, in YYYY-MM-DD format.
- * @apiQuery {String} [endDate] The publication date to delete books until, in YYYY-MM-DD format.
+ * @apiQuery {String} seriesName the name of the series to be deleted
  *
- * @apiSuccess (200: OK) {String} message "Successfully deleted <code>count</code> books within the specified range."
+ * @apiSuccess (200: OK) {String} message "Successfully deleted <code>count</code> books within the specified series"
  *
- * @apiError (404: Not Found) {String} message "No books found in the specified range" if no books match the given criteria.
- * @apiError (400: Bad Request) {String} message "Invalid or missing range parameters - please refer to documentation" if neither a date range nor an ISBN range is provided or if the parameters are invalid.
+ * @apiError (404: Not Found) {String} message "No books found in the specified series" if no books match the given criteria.
+ * @apiError (400: Bad Request) {String} message "Invalid or missing parameters - please refer to documentation" if a series name is not provided or if the parameters are invalid.
  * @apiUse DBError
  */
 bookRouter.delete('/', (request: Request, response: Response) => {
-    // Implementation here
+    try {
+        const { seriesName } = request.params;
+    } catch (error) {
+        console.error('Error executing query:', error);
+        response.status(500).send({
+            message: 'Internal server error',
+        });
+    }
 });
 
 export { bookRouter };
