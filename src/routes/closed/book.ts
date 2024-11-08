@@ -210,7 +210,7 @@ bookRouter.get(
  *
  * @apiSuccess (200: OK) {Object} entry The book object containing information of the book with the specified ISBN.
  *
- * @apiError (404: Name Not Found) {string} message "ISBN not found"
+ * @apiError (404: Not Found) {string} message "ISBN not found"
  * 
  * @apiError (500: Internal Server Error) {string} message "Error executing query: {error}"
  * @apiUse DBError
@@ -258,7 +258,7 @@ bookRouter.get('/isbn/:isbn', async (request: Request, response: Response) => {
  *
  * @apiSuccess (200: OK) {Object} entry The book object containing information of the book with the specified title.
  *
- * @apiError (404: Name Not Found) {string} message "Title not found"
+ * @apiError (404: Not Found) {string} message "Title not found"
  * 
  * @apiError (500: Interal Server Error) {string} message "Error executing query: {error}"
  * @apiUse DBError
@@ -563,7 +563,6 @@ bookRouter.put(
     '/:id',
     mwValidBookRating,
     async (request: Request, response: Response) => {
-        // TODO: we come back to this (completely from chatGPT)
         const { id } = request.params;
         const {
             rating_1_star,
@@ -650,7 +649,7 @@ bookRouter.put(
     }
 );
 
-//middleware function for delte by ISBN function
+//middleware function for delete by ISBN function
 function mwValidBookDeleteISBN(
     request: Request,
     response: Response,
@@ -683,6 +682,8 @@ function mwValidBookDeleteISBN(
  *
  * @apiError (404: Not Found) {String} message "Book not found" if no book with the specified ISBN exists.
  * @apiError (400: Bad Request) {String} message "Invalid or missing ISBN - please refer to documentation" if the ISBN parameter is missing or invalid.
+ * @apiError (500: Internal Server Error) {String} message "Error exeuting query: {error}"
+ * 
  * @apiUse DBError
  */
 bookRouter.delete(
@@ -719,7 +720,7 @@ bookRouter.delete(
         } catch (error) {
             console.error('Error executing query:', error);
             response.status(500).send({
-                message: 'Internal server error',
+                message: 'Internal Server Error',
             });
         }
     }
