@@ -764,7 +764,7 @@ bookRouter.delete(
 
             // Define the delete query
             const theQuery =
-                'DELETE FROM books WHERE series_name = $1 RETURNING *';
+                'DELETE FROM books WHERE series_name = $1 RETURNING *'; // probably will delete things it shouldn't
 
             // Execute the query, using seriesName as the parameter
             const { rows } = await pool.query(theQuery, [seriesName]);
