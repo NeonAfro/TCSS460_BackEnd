@@ -211,8 +211,40 @@ bookRouter.get('/:author', async (request: Request, response: Response) => {
  * @apiError (404: Name Not Found) {string} message "ISBN not found"
  * @apiUse DBError
  */
-bookRouter.get('/:isbn', (request: Request, response: Response) => {
+bookRouter.get('/:isbn', async (request: Request, response: Response) => {
     // Implementation here
+    try {
+        const theQuery = `SELECT * 
+        FROM books WHERE isbn=$1
+        ORDER BY id`;
+
+        const values = [request.params.isbn];
+
+        const { rows } = await pool.query(theQuery, values);
+
+        if (rows.length === 0) {
+            response.status(404).send({
+                message: 'ISBN not found',
+            });
+        }
+
+        const result = await pool.query(
+            'SELECT count(*) AS exact_count FROM books;'
+        );
+        const count = result.rows[0].exact_count;
+
+        const formattedRows = rows.map(format);
+        console.log('rows:', formattedRows);
+
+        response.send({
+            entries: rows.map(format),
+        });
+    } catch (error) {
+        console.error('Error executing query:', error);
+        response.status(500).send({
+            message: 'Internal server error',
+        });
+    }
 });
 
 /**

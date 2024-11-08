@@ -58,6 +58,8 @@ const isValidNewPassword = (newPassword: string): boolean =>
  * @apiBody {String} newPassword a users new password
  * @apiBody {String} confirmNewPassword confirmation of new password
  * 
+ * @apiSuccess (200: Success) {String} message "Password updated successfully"
+ * 
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Invalid Username) {String} message "Invalid Username - please refer to registration documentation"
  * @apiError (400: Invalid NewPassword) {String} message "Invalid New Password  - please refer to documentation"
