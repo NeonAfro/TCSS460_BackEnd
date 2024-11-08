@@ -63,6 +63,8 @@ interface IBookRequest extends Request {
  * @apiName GetAllBooks
  * @apiGroup book
  *
+ * @apiUse JWT
+ *
  * @apiQuery {number} limit the number of entry objects to return. Note, if a value less than
  * 0 is provided or a non-numeric value is provided or no value is provided, the default limit
  * amount of 10 will be used.
@@ -168,10 +170,10 @@ bookRouter.get('/:author', async (request: Request, response: Response) => {
 
         const { rows } = await pool.query(theQuery, values);
 
-        if(rows.length === 0) {
+        if (rows.length === 0) {
             response.status(404).send({
-                message: "Author not Found"
-            })
+                message: 'Author not Found',
+            });
         }
 
         const result = await pool.query(
@@ -183,7 +185,7 @@ bookRouter.get('/:author', async (request: Request, response: Response) => {
         console.log('rows:', formattedRows);
 
         response.send({
-            entries: rows.map(format)
+            entries: rows.map(format),
         });
     } catch (error) {
         console.error('Error executing query:', error);
