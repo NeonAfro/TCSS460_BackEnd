@@ -152,6 +152,8 @@ bookRouter.get('/all', async (request: Request, response: Response) => {
  * @apiName GetBooksByAuthor
  * @apiGroup book
  *
+ * @apiUse JWT
+ * 
  * @apiParam {String} author The author to look up.
  *
  * @apiSuccess (200: OK) {Object[]} entry List of book objects by the specified author.
@@ -199,7 +201,9 @@ bookRouter.get('/:author', async (request: Request, response: Response) => {
  * @api {get} /book/:isbn Request to get all books by ISBN
  * @apiName GetBooksByISBN
  * @apiGroup book
- *
+ * 
+ * @apiUse JWT
+ * 
  * @apiParam {String} isbn The ISBN to look up.
  *
  * @apiSuccess (200: OK) {Object} entry The book object containing information of the book with the specified ISBN.
@@ -215,7 +219,9 @@ bookRouter.get('/:isbn', (request: Request, response: Response) => {
  * @api {get} /book/:title Request to get all books by Title
  * @apiName GetBooksByTitle
  * @apiGroup book
- *
+ * 
+ * @apiUse JWT
+ * 
  * @apiParam {String} title The title to look up.
  *
  * @apiSuccess (200: OK) {Object} entry The book object containing information of the book with the specified title.
@@ -231,7 +237,9 @@ bookRouter.get('/:title', (request: Request, response: Response) => {
  * @api {get} /book/:rating Request to get all books by rating
  * @apiName GetBooksByRating
  * @apiGroup book
- *
+ * 
+ * @apiUse JWT
+ * 
  * @apiParam {String} rating The rating to look up.
  *
  * @apiSuccess (200: OK) {Object[]} entry List of book objects with the specified rating.
@@ -250,7 +258,9 @@ bookRouter.get('/:rating', (request: Request, response: Response) => {
  *
  * @apiName GetAllBooksByYear
  * @apiGroup book
- *
+ * 
+ * @apiUse JWT
+ * 
  * @apiQuery {Number} year The year in which to retrieve all entries.
  *
  * @apiSuccess (200: OK) {String[]} entries The aggregate of all entries with the specified year.
@@ -307,6 +317,8 @@ function mwValidBookBody(
  *
  * @apiName PostBook
  * @apiGroup book
+ * 
+ * @apiUse JWT
  *
  * @apiBody {string} title the new book title
  * @apiBody {string} author the new book author
@@ -400,7 +412,9 @@ function mwValidBookRating(
  *
  * @apiName PutBookRating
  * @apiGroup book
- *
+ * 
+ * @apiUse JWT
+ * 
  * @apiBody {String} title the title of the book entry
  * @apiBody {String} author the author of the book entry
  * @apiBody {number} rating the rating that the book rating will be updated to
@@ -429,6 +443,8 @@ bookRouter.put(
  *
  * @apiName DeleteBooksByISBN
  * @apiGroup book
+ * 
+ * @apiUse JWT
  *
  * @apiParam {Number} isbn The ISBN of the book to be deleted.
  *
@@ -449,7 +465,9 @@ bookRouter.delete('/:isbn', (request: Request, response: Response) => {
  *
  * @apiName DeleteBooksByRange
  * @apiGroup book
- *
+ * 
+ * @apiUse JWT
+ * 
  * @apiQuery {String} [startDate] The publication date to start deleting books from, in YYYY-MM-DD format.
  * @apiQuery {String} [endDate] The publication date to delete books until, in YYYY-MM-DD format.
  * @apiQuery {Number} [startISBN] The starting ISBN in the range to delete.
