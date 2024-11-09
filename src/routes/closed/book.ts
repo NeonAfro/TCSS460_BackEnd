@@ -480,7 +480,10 @@ bookRouter.post(
             }
             const maxQuery = 'SELECT MAX(id) AS max_id FROM books';
             const maxResult = await pool.query(maxQuery);
-            const newID = maxResult.rows[0].max_id !== null ? maxResult.rows[0].max_id + 1 : 1;
+            const newID =
+                maxResult.rows[0].max_id !== null
+                    ? maxResult.rows[0].max_id + 1
+                    : 1;
 
             // Step 2: Insert the new book into the database
             const insertQuery = `
@@ -522,9 +525,9 @@ function mwValidBookRating(
             message: 'Author is required',
         });
     }
-    if (!isNumberProvided(rating) || rating < 1 || rating > 5) {
+    if (!isNumberProvided(rating)) {
         return response.status(400).send({
-            message: 'Rating must be a number between 1 and 5 inclusive',
+            message: 'Rating must be a number greater than 0',
         });
     }
 
