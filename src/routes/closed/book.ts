@@ -502,9 +502,9 @@ bookRouter.post(
             const values = [title, author, isbn, date, newID];
             const insertResult = await pool.query(insertQuery, values);
 
-            // Step 3: Respond with the created book data
+            // Step 3: Respond with the created book data 
             response.status(201).send({
-                entry: insertResult.rows[0],
+                entry: format(insertResult.rows[0]),
                 message: 'Book added successfully',
             });
         } catch (error) {
