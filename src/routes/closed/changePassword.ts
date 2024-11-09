@@ -36,9 +36,9 @@ const isValidNewPassword = (newPassword: string): boolean =>
     /[A-Z]/.test(newPassword);
 
 /**
- * @api {put} /changePassword Request to create new password
+ * @api {put} /changePassword Request to Change Password
  *
- * @apiDescription Request to create new password (known password)
+ * @apiDescription Request to change old Password
  *
  * <ul> <b>Password:</b>
  *      <li> Must be between 8 to 24 characters long</li>
@@ -48,7 +48,7 @@ const isValidNewPassword = (newPassword: string): boolean =>
  *
  *
  * @apiName PutChangePassword
- * @apiGroup Auth
+ * @apiGroup Change Password
  *
  * @apiBody {String} username a username *unique
  * @apiBody {String} oldPassword a users current password
