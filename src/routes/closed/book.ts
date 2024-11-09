@@ -161,7 +161,6 @@ bookRouter.get('/all', async (request: Request, response: Response) => {
  *
  * @apiError (404: Name Not Found) {string} message "Author not found"
  *
- * @apiError (500: Internal Server Error) {string} message "Error executing query: {error}"
  * @apiUse DBError
  */
 bookRouter.get(
@@ -212,7 +211,6 @@ bookRouter.get(
  *
  * @apiError (404: Not Found) {string} message "ISBN not found"
  *
- * @apiError (500: Internal Server Error) {string} message "Error executing query: {error}"
  * @apiUse DBError
  */
 bookRouter.get('/isbn/:isbn', async (request: Request, response: Response) => {
@@ -260,7 +258,6 @@ bookRouter.get('/isbn/:isbn', async (request: Request, response: Response) => {
  *
  * @apiError (404: Not Found) {string} message "Title not found"
  *
- * @apiError (500: Interal Server Error) {string} message "Error executing query: {error}"
  * @apiUse DBError
  */
 bookRouter.get(
@@ -311,7 +308,6 @@ bookRouter.get(
  *
  * @apiError (404: Not Found) {string} message "Books with given rating not found"
  *
- * @apiError (500: Internal Server Error) {string} message "Error executing query: {error}"
  * @apiUse DBError
  */
 bookRouter.get(
@@ -369,7 +365,6 @@ bookRouter.get(
  *
  * @apiError (404: Not Found) {String} message "No Books with the publication year given was found"
  *
- * @apiError (500: Internal Server Error) {String} message "Error executing query: {error}"
  * @apiUse DBError
  */
 bookRouter.get('/year', async (request: Request, response: Response) => {
@@ -681,7 +676,6 @@ function mwValidBookDeleteISBN(
  *
  * @apiError (404: Not Found) {String} message "Book not found" if no book with the specified ISBN exists.
  * @apiError (400: Bad Request) {String} message "Invalid or missing ISBN - please refer to documentation" if the ISBN parameter is missing or invalid.
- * @apiError (500: Internal Server Error) {String} message "Error exeuting query: {error}"
  *
  * @apiUse DBError
  */
@@ -762,7 +756,6 @@ function mwValidBookDeleteSeries(
  * if no matching books are found.
  * @apiError (400: Bad Request) {String} message "Invalid or missing parameters - please refer to documentation"
  * if the series name parameter is not provided or invalid.
- * @apiError (500: Internal Server Error) {String} message "Internal server error" for unexpected database or server issues.
  * @apiUse DBError
  */
 bookRouter.delete(
