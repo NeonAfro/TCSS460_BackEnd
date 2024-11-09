@@ -800,6 +800,7 @@ bookRouter.delete(
                 // Successfully deleted a standalone book
                 return response.status(200).send({
                     message: `Successfully deleted the standalone book titled "${seriesName}"`,
+                    entries: seriesRows.map(format)
                 });
             }
 
