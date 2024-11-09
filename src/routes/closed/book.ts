@@ -723,15 +723,23 @@ function mwValidBookDeleteSeries(
     response: Response,
     next: NextFunction
 ) {
-    const { seriesName } = request.params; // again, body or params? params right
+    const { seriesName } = request.params; // params is correct
 
-    if (!isStringProvided(seriesName)) {
-        response.status(400).send({
+    if (!isStringProvided(seriesName) || seriesName.trim() === '') {
+        return response.status(400).send({
             message: 'Series name is required',
         });
     }
+
     next();
 }
+
+// exists just to catch empty paramater
+bookRouter.delete('/series', (request, response) => {
+    return response.status(400).send({
+        message: 'Series name is required',
+    });
+});
 
 /**
  * @api {delete} /book/series/:seriesName Delete a range of books by series name or a standalone book by exact title.
@@ -800,7 +808,7 @@ bookRouter.delete(
                 // Successfully deleted a standalone book
                 return response.status(200).send({
                     message: `Successfully deleted the standalone book titled "${seriesName}"`,
-                    entries: seriesRows.map(format)
+                    entries: seriesRows.map(format),
                 });
             }
 
