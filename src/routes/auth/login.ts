@@ -32,21 +32,19 @@ const key = {
  * @apiName PostLogin
  * @apiGroup Login
  *
- * @apiBody {String} email a users email
- * @apiBody {String} password a users password
+ * @apiBody {String} email a user's email
+ * @apiBody {String} password a user's password
  *
  * @apiSuccess {String} accessToken JSON Web Token
  * @apiSuccess {Object} user a user object
- * @apiSuccess {string} user.name the first name associated with <code>email</code>
- * @apiSuccess {string} user.message The message associated with <code>email</code>
- * @apiSuccess {number} user.priority The priority associated with <code>email</code>
+ * @apiSuccess {string} user.id the unique identifier of the user
+ * @apiSuccess {string} user.email the email associated with the user
+ * @apiSuccess {string} user.name the first name associated with the user
+ * @apiSuccess {string} user.role the role of the user
  *
- * @apiError (400: Missing Parameters) {String} message "Missing required information" when the request
- * does not supply an email and/or password
- * @apiError (400: Invalid Credentials) {String} message "Invalid Credentials" when either the
- * supplied email does not exist in the dataset or the supplied password does not match the
- * entry in the dataset
- *
+ * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * @apiError (400: Invalid Credentials) {String} message "Invalid Credentials"
+ * @apiUse DBError
  */
 signinRouter.post(
     '/login',
@@ -124,7 +122,8 @@ signinRouter.post(
                             id: result.rows[0].account_id,
                             email: result.rows[0].email,
                             name: result.rows[0].firstname,
-                            role: result.rows[0].role === '1' ? 'Admin' : 'User',
+                            role:
+                                result.rows[0].role === '1' ? 'Admin' : 'User',
                         },
                     });
                 } else {
