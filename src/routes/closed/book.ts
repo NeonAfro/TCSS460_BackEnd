@@ -497,7 +497,7 @@ bookRouter.post(
                     rating_3_star,
                     rating_4_star,
                     rating_5_star) 
-                VALUES ($1, $2, $3, $4, $5, $1, 0, 0, 0, 0, 0, 0, 0) RETURNING *;
+                VALUES ($1, $2, $3, $4, $5, $1, 2.5, 1, 1, 1, 1, 1, 1) RETURNING *;
             `;
             const values = [title, author, isbn, date, newID];
             const insertResult = await pool.query(insertQuery, values);
