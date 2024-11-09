@@ -367,14 +367,14 @@ bookRouter.get(
  *
  * @apiUse DBError
  */
-bookRouter.get('/year', async (request: Request, response: Response) => {
+bookRouter.get('/year/:year', async (request: Request, response: Response) => {
     // Implementation here
     try {
         const theQuery = `SELECT * 
         FROM books WHERE publication_year=$1
         ORDER BY id`;
 
-        const values = [request.query.year];
+        const values = [request.params.year];
 
         const { rows } = await pool.query(theQuery, values);
 
