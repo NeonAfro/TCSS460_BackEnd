@@ -513,7 +513,7 @@ function mwValidBookRating(
     response: Response,
     next: NextFunction
 ) {
-    const { title, author, rating } = request.body;
+    const { title, author } = request.body;
 
     if (!isStringProvided(title) || title.length < 3) {
         return response.status(400).send({
@@ -523,11 +523,6 @@ function mwValidBookRating(
     if (!isStringProvided(author)) {
         return response.status(400).send({
             message: 'Author is required',
-        });
-    }
-    if (!isNumberProvided(rating)) {
-        return response.status(400).send({
-            message: 'Rating must be a number greater than 0',
         });
     }
 
