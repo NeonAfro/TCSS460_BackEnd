@@ -787,6 +787,7 @@ bookRouter.delete(
                 // Successfully deleted books in the series
                 return response.status(200).send({
                     message: `Successfully deleted ${seriesRows.length} books within the specified series`,
+                    entries: seriesRows.map(format),
                 });
             }
 
