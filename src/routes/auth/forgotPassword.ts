@@ -62,8 +62,8 @@ const isValidEmail = (email: string): boolean => email.includes('@');
  * @apiBody {String} newPassword a users new password
  * @apiBody {String} confirmNewPassword confirmation of new password
  *
- * @apiSuccess (200: Ok) {string} message "Password updated successfully"
- * @apiSuccess (200: Ok) {string} resetToken a newly created JWT
+ * @apiSuccess (200: OK) {string} message "Password updated successfully"
+ * @apiSuccess (200: OK) {string} resetToken a newly created JWT
  *
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Password Mismatch) {String} message "The passwords do not match"
