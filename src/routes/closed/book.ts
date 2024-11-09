@@ -637,9 +637,12 @@ bookRouter.put(
                 return;
             }
 
+            const formattedRows = rows.map(format);
+            console.log('rows:', formattedRows);
+
             response.status(200).send({
                 message: 'Book ratings updated successfully',
-                book: rows[0],
+                entries: rows.map(format),
             });
         } catch (error) {
             console.error('Error executing update query:', error);
