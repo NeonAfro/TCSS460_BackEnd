@@ -132,7 +132,7 @@ forgotPasswordRouter.put(
         else {
             response.status(400).send({
                 message:
-                    'Invaid phone number - please refer to registration documentation',
+                    'Invalid phone number - please refer to registration documentation',
             });
             return;
         }
