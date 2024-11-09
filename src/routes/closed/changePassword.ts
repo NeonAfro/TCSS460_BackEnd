@@ -50,6 +50,8 @@ const isValidNewPassword = (newPassword: string): boolean =>
  * @apiName PutChangePassword
  * @apiGroup Change Password
  *
+ * @apiHeader {String} Authorization The string "Bearer " + a valid JSON Web Token (JWT).
+ *
  * @apiBody {String} username a username *unique
  * @apiBody {String} oldPassword a users current password
  * @apiBody {String} newPassword a users new password
@@ -62,6 +64,8 @@ const isValidNewPassword = (newPassword: string): boolean =>
  * @apiError (400: Invalid NewPassword) {String} message "Invalid New Password  - please refer to documentation"
  * @apiError (404: User does not exist) {String} message "User does not exist"
  * @apiError (400: Invalid OldPassword) {String} message "Old Password is not correct for User"
+ * @apiError (401: Unauthorized) {String} message "Invalid or missing JWT token"
+ * @apiError (403: Forbidden) {String} message "Token is not valid"
  * @apiError (500: Server Error) {String} message "Server error - contact support"
  */
 changePasswordRouter.put(
