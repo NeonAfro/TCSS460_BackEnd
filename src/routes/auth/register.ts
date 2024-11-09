@@ -60,7 +60,7 @@ const emailMiddlewareCheck = (
         next();
     } else {
         response.status(400).send({
-            message: 'Invalid Email  - please refer to documentation',
+            message: 'Invalid or missing email - please refer to documentation',
         });
     }
 };
@@ -108,11 +108,12 @@ const emailMiddlewareCheck = (
  *
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Invalid Password) {String} message "Invalid or missing password - please refer to documentation"
- * @apiError (400: Invalid Phone) {String} message "Invalid or missing phone number  - please refer to documentation"
- * @apiError (400: Invalid Email) {String} message "Invalid or missing email  - please refer to documentation"
- * @apiError (400: Invalid Role) {String} message "Invalid or missing role  - please refer to documentation"
+ * @apiError (400: Invalid Phone) {String} message "Invalid or missing phone number - please refer to documentation"
+ * @apiError (400: Invalid Email) {String} message "Invalid or missing email - please refer to documentation"
+ * @apiError (400: Invalid Role) {String} message "Invalid or missing role - please refer to documentation"
  * @apiError (400: Username exists) {String} message "Username exists"
  * @apiError (400: Email exists) {String} message "Email exists"
+ * @apiError (400: Password exists) {String} message "Password exists"
  *
  */
 registerRouter.post(
@@ -138,7 +139,8 @@ registerRouter.post(
             return;
         } else {
             response.status(400).send({
-                message: 'Invalid Phone Number - please refer to documentation',
+                message:
+                    'Invalid or missing phone number - please refer to documentation',
             });
             return;
         }
@@ -149,7 +151,8 @@ registerRouter.post(
             next();
         } else {
             response.status(400).send({
-                message: 'Invalid Password - please refer to documentation',
+                message:
+                    'Invalid or missing password - please refer to documentation',
             });
         }
     },
@@ -158,7 +161,8 @@ registerRouter.post(
             next();
         } else {
             response.status(400).send({
-                message: 'Invalid Role  - please refer to documentation',
+                message:
+                    'Invalid or missing role - please refer to documentation',
             });
         }
     },
