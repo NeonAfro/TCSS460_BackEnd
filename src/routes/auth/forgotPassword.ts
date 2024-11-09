@@ -122,7 +122,7 @@ forgotPasswordRouter.put(
         else {
             response.status(400).send({
                 message:
-                    'Invaid email - please refer to registration documentation',
+                    'Invalid email - please refer to registration documentation',
             });
             return;
         }
