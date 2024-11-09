@@ -3,6 +3,8 @@ import express, { Request, Response, Router, NextFunction } from 'express';
 
 import jwt from 'jsonwebtoken';
 
+import { IJwtRequest } from '../../core/models/JwtRequest.model';
+
 const key = {
     secret: process.env.JSON_WEB_TOKEN,
 };
@@ -23,10 +25,6 @@ const generateHash = credentialingFunctions.generateHash;
 const generateSalt = credentialingFunctions.generateSalt;
 
 const changePasswordRouter: Router = express.Router();
-
-export interface IUserRequest extends Request {
-    id: number;
-}
 
 const isValidNewPassword = (newPassword: string): boolean =>
     isStringProvided(newPassword) &&
@@ -72,8 +70,7 @@ changePasswordRouter.put(
         //Verify that the caller supplied all the parameters
         //In js, empty strings or null values evaulte to false
         if (
-            // username, email, new password must be provided
-            isStringProvided(request.body.username) &&
+            // old and new password must be provided
             isStringProvided(request.body.oldPassword) &&
             isStringProvided(request.body.newPassword) &&
             isStringProvided(request.body.confirmNewPassword)
@@ -105,12 +102,12 @@ changePasswordRouter.put(
         }
     },
     // Check if User exists within the database
-    (request: IUserRequest, response: Response, next: NextFunction) => {
+    (request: IJwtRequest, response: Response, next: NextFunction) => {
         const theQuery = `SELECT salted_hash, salt, Account_Credential.account_id, account.email, account.firstname, account.lastname, account.phone, account.username, account.account_role FROM Account_Credential
         INNER JOIN Account ON
         Account_Credential.account_id=Account.account_id 
-        WHERE Account.username=$1`;
-        const values = [request.body.username];
+        WHERE Account.account_id=$1`;
+        const values = [+request.claims.id];
 
         pool.query(theQuery, values)
             .then((result) => {
@@ -129,7 +126,6 @@ changePasswordRouter.put(
                     });
                     return;
                 }
-
                 // Retrieve the stored hash and salt
                 const { account_id, salted_hash, salt } = result.rows[0];
 
@@ -146,7 +142,7 @@ changePasswordRouter.put(
                 }
 
                 // Password is correct, set the user id in the request and move to the next middleware
-                request.id = account_id;
+                request.claims.id = account_id;
                 next();
             })
             .catch((error) => {
@@ -157,8 +153,8 @@ changePasswordRouter.put(
                 });
             });
     },
-    (request: IUserRequest, response: Response) => {
-        if (!request.id) {
+    (request: IJwtRequest, response: Response) => {
+        if (!request.claims.id) {
             response
                 .status(500)
                 .send({ message: 'Server error - contact support' });
@@ -171,12 +167,12 @@ changePasswordRouter.put(
         const updateQuery = `
             UPDATE Account_Credential SET salted_hash = $1, salt = $2 WHERE account_id = $3
         `;
-        const values = [saltedHash, salt, request.id];
+        const values = [saltedHash, salt, request.claims.id];
 
         pool.query(updateQuery, values)
             .then(() => {
                 const resetToken = jwt.sign(
-                    { id: request.id },
+                    { id: request.claims.id },
                     key.secret,
                     { expiresIn: '15m' } // Token expires in 15 minutes
                 );
