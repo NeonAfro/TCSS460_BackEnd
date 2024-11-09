@@ -1,1 +1,764 @@
-{"info":{"_postman_id":"2900f9a7-db1a-4829-906c-43642395e504","name":"auth/forgotPassword","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},"item":[{"name":"201: Register Created","event":[{"listen":"test","script":{"id":"071fc258-1df8-441d-96be-811ab80cb484","exec":["pm.test(\"Response is Success 201\", () => {\r","    pm.response.to.have.status(201);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","\r","pm.test(\"Response to have accessToken or JWT Token\", () => {\r","    pm.expect(body).to.have.ownProperty(\"accessToken\");\r","});\r","\r","pm.test(\"Response to have id\", () => {\r","    pm.expect(body).to.have.ownProperty(\"id\");\r","});"],"type":"text/javascript","packages":{}}},{"listen":"prerequest","script":{"id":"c090db91-9d8d-4764-874f-ed04226a3216","exec":["pm.environment.set(\"first_name\", pm.variables.replaceIn('{{$randomFirstName}}'));\r","pm.environment.set(\"last_name\", pm.variables.replaceIn('{{$randomLastName}}'));\r","pm.environment.set(\"email\", pm.variables.replaceIn('{{$randomEmail}}'));\r","pm.environment.set(\"username\", pm.variables.replaceIn('{{$randomUserName}}'));\r","pm.environment.set(\"old_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));\r","pm.environment.set(\"phone_number\", pm.variables.replaceIn('{{$randomPhoneNumber}}'));"],"type":"text/javascript","packages":{}}}],"id":"ad190bef-12e3-4a37-91a5-2df17e5843e9","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"POST","header":[],"body":{"mode":"raw","raw":"{\n    \"firstname\": \"{{first_name}}\",\n    \"lastname\": \"{{last_name}}\",\n    \"email\": \"{{email}}\",\n    \"username\": \"{{username}}\",\n    \"password\": \"{{old_password}}\",\n    \"role\": \"3\",\n    \"phone\": \"{{phone_number}}\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/register","host":["localhost"],"port":"4000","path":["register"],"query":[{"key":"firstname","value":"\"\"","type":"text","disabled":true}]}},"response":[]},{"name":"200: OK","event":[{"listen":"test","script":{"id":"071fc258-1df8-441d-96be-811ab80cb484","exec":["pm.test(\"Response is Success 200\", () => {\r","    pm.response.to.have.status(200);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","\r","pm.test(\"Response to have message 'Password updated successfully'\", () => {\r","    pm.expect(body).to.have.ownProperty(\"message\");\r","    pm.expect(body.message).to.eql(\"Password updated successfully\");\r","});\r","\r","pm.test(\"Response to have resetToken or JWT Token\", () => {\r","    pm.expect(body).to.have.ownProperty(\"resetToken\");\r","});\r",""],"type":"text/javascript","packages":{}}},{"listen":"prerequest","script":{"id":"c090db91-9d8d-4764-874f-ed04226a3216","exec":["pm.environment.set(\"new_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));"],"type":"text/javascript","packages":{}}}],"id":"98637abe-3934-4032-bbef-a4e690557d4c","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"PUT","header":[],"body":{"mode":"raw","raw":"{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/forgotPassword","host":["localhost"],"port":"4000","path":["forgotPassword"],"query":[{"key":"firstname","value":"\"\"","type":"text","disabled":true}]}},"response":[]},{"name":"400: Missing Parameters","event":[{"listen":"test","script":{"id":"071fc258-1df8-441d-96be-811ab80cb484","exec":["pm.test(\"Response is error 400\", () => {\r","    pm.response.to.have.status(400);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","pm.test(\"Response to have message 'Missing a parameter'\", () => {\r","    pm.expect(body).to.have.ownProperty(\"message\");\r","    pm.expect(body.message).to.eql(\"Missing a parameter\");\r","});"],"type":"text/javascript","packages":{}}},{"listen":"prerequest","script":{"id":"c090db91-9d8d-4764-874f-ed04226a3216","exec":[""],"type":"text/javascript","packages":{}}}],"id":"57cf9cdb-7f45-423e-aae2-53111493890b","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"PUT","header":[],"body":{"mode":"raw","raw":"{\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/forgotPassword","host":["localhost"],"port":"4000","path":["forgotPassword"],"query":[{"key":"firstname","value":"\"\"","type":"text","disabled":true}]}},"response":[]},{"name":"400: Password Mismatch","event":[{"listen":"test","script":{"id":"071fc258-1df8-441d-96be-811ab80cb484","exec":["pm.test(\"Response is error 400\", () => {\r","    pm.response.to.have.status(400);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","pm.test(\"Response to have message 'Missing a parameter'\", () => {\r","    pm.expect(body).to.have.ownProperty(\"message\");\r","    pm.expect(body.message).to.eql(\"The passwords do not match\");\r","});"],"type":"text/javascript","packages":{}}},{"listen":"prerequest","script":{"id":"c090db91-9d8d-4764-874f-ed04226a3216","exec":["pm.environment.set(\"new_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));\r",""],"type":"text/javascript","packages":{}}}],"id":"5c1eb065-003b-4545-bf8e-766d2373b379","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"PUT","header":[],"body":{"mode":"raw","raw":"{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"wrong password!\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/forgotPassword","host":["localhost"],"port":"4000","path":["forgotPassword"],"query":[{"key":"firstname","value":"\"\"","type":"text","disabled":true}]}},"response":[]},{"name":"400: Invalid Email","event":[{"listen":"test","script":{"id":"071fc258-1df8-441d-96be-811ab80cb484","exec":["pm.test(\"Response is error 400\", () => {\r","    pm.response.to.have.status(400);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","pm.test(\"Response to have message 'Invalid email - please refer to registration documentation'\", () => {\r","    pm.expect(body).to.have.ownProperty(\"message\");\r","    pm.expect(body.message).to.eql(\"Invalid email - please refer to registration documentation\");\r","});"],"type":"text/javascript","packages":{}}},{"listen":"prerequest","script":{"id":"c090db91-9d8d-4764-874f-ed04226a3216","exec":["pm.environment.set(\"new_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));\r",""],"type":"text/javascript","packages":{}}}],"id":"9232ec8b-399e-4fb5-8c75-db5a5ab24052","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"PUT","header":[],"body":{"mode":"raw","raw":"{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"wrong.email$wrong.com\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/forgotPassword","host":["localhost"],"port":"4000","path":["forgotPassword"],"query":[{"key":"firstname","value":"\"\"","type":"text","disabled":true}]}},"response":[]},{"name":"400: Invalid Phone Number","event":[{"listen":"test","script":{"id":"071fc258-1df8-441d-96be-811ab80cb484","exec":["pm.test(\"Response is error 400\", () => {\r","    pm.response.to.have.status(400);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","pm.test(\"Response to have message 'Invalid phone number - please refer to registration documentation'\", () => {\r","    pm.expect(body).to.have.ownProperty(\"message\");\r","    pm.expect(body.message).to.eql(\"Invalid phone number - please refer to registration documentation\");\r","});"],"type":"text/javascript","packages":{}}},{"listen":"prerequest","script":{"id":"c090db91-9d8d-4764-874f-ed04226a3216","exec":["pm.environment.set(\"new_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));"],"type":"text/javascript","packages":{}}}],"id":"51da9954-48f6-4f3e-b16d-0f7023a08d3f","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"PUT","header":[],"body":{"mode":"raw","raw":"{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}-420\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/forgotPassword","host":["localhost"],"port":"4000","path":["forgotPassword"],"query":[{"key":"firstname","value":"\"\"","type":"text","disabled":true}]}},"response":[]},{"name":"400: Invalid NewPassword","event":[{"listen":"test","script":{"id":"071fc258-1df8-441d-96be-811ab80cb484","exec":["pm.test(\"Response is error 400\", () => {\r","    pm.response.to.have.status(400);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","pm.test(\"Response to have message 'Invalid new password - please refer to documentation'\", () => {\r","    pm.expect(body).to.have.ownProperty(\"message\");\r","    pm.expect(body.message).to.eql(\"Invalid new password - please refer to documentation\");\r","});"],"type":"text/javascript","packages":{}}},{"listen":"prerequest","script":{"id":"c090db91-9d8d-4764-874f-ed04226a3216","exec":["let invalidPassword = pm.variables.replaceIn('{{$randomPassword}}');\r","pm.environment.set(\"new_password\", invalidPassword.substring(0,4));"],"type":"text/javascript","packages":{}}}],"id":"f37aba30-0226-4cdf-b29c-23934822b966","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"PUT","header":[],"body":{"mode":"raw","raw":"{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/forgotPassword","host":["localhost"],"port":"4000","path":["forgotPassword"],"query":[{"key":"firstname","value":"\"\"","type":"text","disabled":true}]}},"response":[]},{"name":"404: User does not exist","event":[{"listen":"test","script":{"id":"071fc258-1df8-441d-96be-811ab80cb484","exec":["pm.test(\"Response is error 404\", () => {\r","    pm.response.to.have.status(404);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","pm.test(\"Response to have message 'User does not exist within the Database'\", () => {\r","    pm.expect(body).to.have.ownProperty(\"message\");\r","    pm.expect(body.message).to.eql(\"User does not exist within the Database\");\r","});"],"type":"text/javascript","packages":{}}},{"listen":"prerequest","script":{"id":"c090db91-9d8d-4764-874f-ed04226a3216","exec":["pm.environment.set(\"new_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));\r","pm.environment.set(\"username\", pm.variables.replaceIn('{{$randomUserName}}'));\r",""],"type":"text/javascript","packages":{}}}],"id":"53131374-de62-42b2-aa21-aa682b67adb1","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"PUT","header":[],"body":{"mode":"raw","raw":"{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/forgotPassword","host":["localhost"],"port":"4000","path":["forgotPassword"],"query":[{"key":"firstname","value":"\"\"","type":"text","disabled":true}]}},"response":[]},{"name":"500: DB Query Error","event":[{"listen":"prerequest","script":{"id":"b7bd6ba5-2108-4e6d-b7dd-560f3df7d55f","exec":["pm.environment.set(\"old_password_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\"));\r",""],"type":"text/javascript","packages":{}}},{"listen":"test","script":{"id":"edc71dd7-2557-44bd-8364-88b224ed3aec","exec":["pm.test(\"Response is error 500\", () => {\r","    pm.response.to.have.status(500);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","pm.test(\"Response to have message 'Unexpected issue on account retrieval in the database'\", () => {\r","    pm.expect(body).to.have.ownProperty(\"message\");\r","    pm.expect(body.message).to.eql(\"Unexpected issue on account retrieval in the database\");\r","});"],"type":"text/javascript","packages":{}}}],"id":"27392fb2-af09-4bf2-af8c-1b50fd5299e2","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"PUT","header":[{"key":"x-access-token","value":"{{User Token}}","type":"text"}],"body":{"mode":"raw","raw":"{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/forgotPassword","host":["localhost"],"port":"4000","path":["forgotPassword"]}},"response":[]},{"name":"500: Server Error","event":[{"listen":"prerequest","script":{"id":"b7bd6ba5-2108-4e6d-b7dd-560f3df7d55f","exec":["pm.environment.set(\"new_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));"],"type":"text/javascript","packages":{}}},{"listen":"test","script":{"id":"edc71dd7-2557-44bd-8364-88b224ed3aec","exec":["pm.test(\"Response is error 500\", () => {\r","    pm.response.to.have.status(500);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","pm.test(\"Response to have message 'Unexpected issue on retrieving user in the database'\", () => {\r","    pm.expect(body).to.have.ownProperty(\"message\");\r","    pm.expect(body.message).to.eql(\"Unexpected issue on retrieving user in the database\");\r","});"],"type":"text/javascript","packages":{}}}],"id":"509ebb96-ad4b-40d3-bc24-33681fa7c178","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"PUT","header":[{"key":"x-access-token","value":"{{User Token}}","type":"text"}],"body":{"mode":"raw","raw":"{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/forgotPassword","host":["localhost"],"port":"4000","path":["forgotPassword"]}},"response":[]},{"name":"500: Password Update Error","event":[{"listen":"prerequest","script":{"id":"b7bd6ba5-2108-4e6d-b7dd-560f3df7d55f","exec":["pm.environment.set(\"old_password_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\"));\r",""],"type":"text/javascript","packages":{}}},{"listen":"test","script":{"id":"edc71dd7-2557-44bd-8364-88b224ed3aec","exec":["pm.test(\"Response is error 500\", () => {\r","    pm.response.to.have.status(500);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","pm.test(\"Response to have message 'Unexpected issue on updating password in the database'\", () => {\r","    pm.expect(body).to.have.ownProperty(\"message\");\r","    pm.expect(body.message).to.eql(\"Unexpected issue on updating password in the database\");\r","});"],"type":"text/javascript","packages":{}}}],"id":"acd8d759-553b-4c68-b172-7634fcabab42","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"PUT","header":[{"key":"x-access-token","value":"{{User Token}}","type":"text"}],"body":{"mode":"raw","raw":"{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/forgotPassword","host":["localhost"],"port":"4000","path":["forgotPassword"]}},"response":[]}],"auth":{"type":"bearer","bearer":[{"key":"token","value":"{{Personal Token}}","type":"string"}]},"event":[{"listen":"prerequest","script":{"id":"09e1f928-5d3e-4a04-b73a-f9400728edcd","type":"text/javascript","packages":{},"exec":[""]}},{"listen":"test","script":{"id":"e953f8c4-5be3-457f-be5e-0ad6ac051808","type":"text/javascript","packages":{},"exec":[""]}}]}
+{
+    "info": {
+        "_postman_id": "2900f9a7-db1a-4829-906c-43642395e504",
+        "name": "auth/forgotPassword",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "201: Register Created",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "071fc258-1df8-441d-96be-811ab80cb484",
+                        "exec": [
+                            "pm.test(\"Response is Success 201\", () => {\r",
+                            "    pm.response.to.have.status(201);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "\r",
+                            "pm.test(\"Response to have accessToken or JWT Token\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"accessToken\");\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response to have id\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"id\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "c090db91-9d8d-4764-874f-ed04226a3216",
+                        "exec": [
+                            "pm.environment.set(\"first_name\", pm.variables.replaceIn('{{$randomFirstName}}'));\r",
+                            "pm.environment.set(\"last_name\", pm.variables.replaceIn('{{$randomLastName}}'));\r",
+                            "pm.environment.set(\"email\", pm.variables.replaceIn('{{$randomEmail}}'));\r",
+                            "pm.environment.set(\"username\", pm.variables.replaceIn('{{$randomUserName}}'));\r",
+                            "pm.environment.set(\"old_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));\r",
+                            "pm.environment.set(\"phone_number\", pm.variables.replaceIn('{{$randomPhoneNumber}}'));"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "ad190bef-12e3-4a37-91a5-2df17e5843e9",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"firstname\": \"{{first_name}}\",\n    \"lastname\": \"{{last_name}}\",\n    \"email\": \"{{email}}\",\n    \"username\": \"{{username}}\",\n    \"password\": \"{{old_password}}\",\n    \"role\": \"3\",\n    \"phone\": \"{{phone_number}}\"\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/register",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["register"],
+                    "query": [
+                        {
+                            "key": "firstname",
+                            "value": "\"\"",
+                            "type": "text",
+                            "disabled": true
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "200: OK",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "071fc258-1df8-441d-96be-811ab80cb484",
+                        "exec": [
+                            "pm.test(\"Response is Success 200\", () => {\r",
+                            "    pm.response.to.have.status(200);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "\r",
+                            "pm.test(\"Response to have message 'Password updated successfully'\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"message\");\r",
+                            "    pm.expect(body.message).to.eql(\"Password updated successfully\");\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response to have resetToken or JWT Token\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"resetToken\");\r",
+                            "});\r",
+                            ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "c090db91-9d8d-4764-874f-ed04226a3216",
+                        "exec": [
+                            "pm.environment.set(\"new_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "98637abe-3934-4032-bbef-a4e690557d4c",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/forgotPassword",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["forgotPassword"],
+                    "query": [
+                        {
+                            "key": "firstname",
+                            "value": "\"\"",
+                            "type": "text",
+                            "disabled": true
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "400: Missing Parameters",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "071fc258-1df8-441d-96be-811ab80cb484",
+                        "exec": [
+                            "pm.test(\"Response is error 400\", () => {\r",
+                            "    pm.response.to.have.status(400);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "pm.test(\"Response to have message 'Missing a parameter'\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"message\");\r",
+                            "    pm.expect(body.message).to.eql(\"Missing a parameter\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "c090db91-9d8d-4764-874f-ed04226a3216",
+                        "exec": [""],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "57cf9cdb-7f45-423e-aae2-53111493890b",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/forgotPassword",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["forgotPassword"],
+                    "query": [
+                        {
+                            "key": "firstname",
+                            "value": "\"\"",
+                            "type": "text",
+                            "disabled": true
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "400: Password Mismatch",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "071fc258-1df8-441d-96be-811ab80cb484",
+                        "exec": [
+                            "pm.test(\"Response is error 400\", () => {\r",
+                            "    pm.response.to.have.status(400);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "pm.test(\"Response to have message 'Missing a parameter'\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"message\");\r",
+                            "    pm.expect(body.message).to.eql(\"The passwords do not match\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "c090db91-9d8d-4764-874f-ed04226a3216",
+                        "exec": [
+                            "pm.environment.set(\"new_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));\r",
+                            ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "5c1eb065-003b-4545-bf8e-766d2373b379",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"wrong password!\"\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/forgotPassword",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["forgotPassword"],
+                    "query": [
+                        {
+                            "key": "firstname",
+                            "value": "\"\"",
+                            "type": "text",
+                            "disabled": true
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "400: Invalid Email",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "071fc258-1df8-441d-96be-811ab80cb484",
+                        "exec": [
+                            "pm.test(\"Response is error 400\", () => {\r",
+                            "    pm.response.to.have.status(400);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "pm.test(\"Response to have message 'Invalid email - please refer to registration documentation'\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"message\");\r",
+                            "    pm.expect(body.message).to.eql(\"Invalid email - please refer to registration documentation\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "c090db91-9d8d-4764-874f-ed04226a3216",
+                        "exec": [
+                            "pm.environment.set(\"new_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));\r",
+                            ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "9232ec8b-399e-4fb5-8c75-db5a5ab24052",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"wrong.email$wrong.com\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/forgotPassword",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["forgotPassword"],
+                    "query": [
+                        {
+                            "key": "firstname",
+                            "value": "\"\"",
+                            "type": "text",
+                            "disabled": true
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "400: Invalid Phone Number",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "071fc258-1df8-441d-96be-811ab80cb484",
+                        "exec": [
+                            "pm.test(\"Response is error 400\", () => {\r",
+                            "    pm.response.to.have.status(400);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "pm.test(\"Response to have message 'Invalid phone number - please refer to registration documentation'\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"message\");\r",
+                            "    pm.expect(body.message).to.eql(\"Invalid phone number - please refer to registration documentation\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "c090db91-9d8d-4764-874f-ed04226a3216",
+                        "exec": [
+                            "pm.environment.set(\"new_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "51da9954-48f6-4f3e-b16d-0f7023a08d3f",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}-420\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/forgotPassword",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["forgotPassword"],
+                    "query": [
+                        {
+                            "key": "firstname",
+                            "value": "\"\"",
+                            "type": "text",
+                            "disabled": true
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "400: Invalid NewPassword",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "071fc258-1df8-441d-96be-811ab80cb484",
+                        "exec": [
+                            "pm.test(\"Response is error 400\", () => {\r",
+                            "    pm.response.to.have.status(400);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "pm.test(\"Response to have message 'Invalid new password - please refer to documentation'\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"message\");\r",
+                            "    pm.expect(body.message).to.eql(\"Invalid new password - please refer to documentation\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "c090db91-9d8d-4764-874f-ed04226a3216",
+                        "exec": [
+                            "let invalidPassword = pm.variables.replaceIn('{{$randomPassword}}');\r",
+                            "pm.environment.set(\"new_password\", invalidPassword.substring(0,4));"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "f37aba30-0226-4cdf-b29c-23934822b966",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/forgotPassword",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["forgotPassword"],
+                    "query": [
+                        {
+                            "key": "firstname",
+                            "value": "\"\"",
+                            "type": "text",
+                            "disabled": true
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "404: User does not exist",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "071fc258-1df8-441d-96be-811ab80cb484",
+                        "exec": [
+                            "pm.test(\"Response is error 404\", () => {\r",
+                            "    pm.response.to.have.status(404);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "pm.test(\"Response to have message 'User does not exist within the Database'\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"message\");\r",
+                            "    pm.expect(body.message).to.eql(\"User does not exist within the Database\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "c090db91-9d8d-4764-874f-ed04226a3216",
+                        "exec": [
+                            "pm.environment.set(\"new_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));\r",
+                            "pm.environment.set(\"username\", pm.variables.replaceIn('{{$randomUserName}}'));\r",
+                            ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "53131374-de62-42b2-aa21-aa682b67adb1",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/forgotPassword",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["forgotPassword"],
+                    "query": [
+                        {
+                            "key": "firstname",
+                            "value": "\"\"",
+                            "type": "text",
+                            "disabled": true
+                        }
+                    ]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "500: DB Query Error",
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "b7bd6ba5-2108-4e6d-b7dd-560f3df7d55f",
+                        "exec": [
+                            "pm.environment.set(\"old_password_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\"));\r",
+                            ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "edc71dd7-2557-44bd-8364-88b224ed3aec",
+                        "exec": [
+                            "pm.test(\"Response is error 500\", () => {\r",
+                            "    pm.response.to.have.status(500);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "pm.test(\"Response to have message 'Unexpected issue on account retrieval in the database'\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"message\");\r",
+                            "    pm.expect(body.message).to.eql(\"Unexpected issue on account retrieval in the database\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "27392fb2-af09-4bf2-af8c-1b50fd5299e2",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "PUT",
+                "header": [
+                    {
+                        "key": "x-access-token",
+                        "value": "{{User Token}}",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/forgotPassword",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["forgotPassword"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "500: Server Error",
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "b7bd6ba5-2108-4e6d-b7dd-560f3df7d55f",
+                        "exec": [
+                            "pm.environment.set(\"new_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "edc71dd7-2557-44bd-8364-88b224ed3aec",
+                        "exec": [
+                            "pm.test(\"Response is error 500\", () => {\r",
+                            "    pm.response.to.have.status(500);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "pm.test(\"Response to have message 'Unexpected issue on retrieving user in the database'\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"message\");\r",
+                            "    pm.expect(body.message).to.eql(\"Unexpected issue on retrieving user in the database\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "509ebb96-ad4b-40d3-bc24-33681fa7c178",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "PUT",
+                "header": [
+                    {
+                        "key": "x-access-token",
+                        "value": "{{User Token}}",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/forgotPassword",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["forgotPassword"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "500: Password Update Error",
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "b7bd6ba5-2108-4e6d-b7dd-560f3df7d55f",
+                        "exec": [
+                            "pm.environment.set(\"old_password_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\"));\r",
+                            ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "edc71dd7-2557-44bd-8364-88b224ed3aec",
+                        "exec": [
+                            "pm.test(\"Response is error 500\", () => {\r",
+                            "    pm.response.to.have.status(500);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "pm.test(\"Response to have message 'Unexpected issue on updating password in the database'\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"message\");\r",
+                            "    pm.expect(body.message).to.eql(\"Unexpected issue on updating password in the database\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "acd8d759-553b-4c68-b172-7634fcabab42",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "PUT",
+                "header": [
+                    {
+                        "key": "x-access-token",
+                        "value": "{{User Token}}",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"username\" : \"{{username}}\",\n    \"email\" : \"{{email}}\",\n    \"phone\" : \"{{phone_number}}\",\n    \"newPassword\" : \"{{new_password}}\",\n    \"confirmNewPassword\" : \"{{new_password}}\"\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/forgotPassword",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["forgotPassword"]
+                }
+            },
+            "response": []
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            { "key": "token", "value": "{{Personal Token}}", "type": "string" }
+        ]
+    },
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "id": "09e1f928-5d3e-4a04-b73a-f9400728edcd",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [""]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "id": "e953f8c4-5be3-457f-be5e-0ad6ac051808",
+                "type": "text/javascript",
+                "packages": {},
+                "exec": [""]
+            }
+        }
+    ]
+}

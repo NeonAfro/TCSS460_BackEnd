@@ -1,1 +1,386 @@
-{"info":{"_postman_id":"8c6c5fa6-ea58-4c1f-9768-579b48460832","name":"auth/login","schema":"https://schema.getpostman.com/json/collection/v2.1.0/collection.json"},"item":[{"name":"201: Register Created","event":[{"listen":"prerequest","script":{"id":"5029ea69-71a9-46dc-94d8-068bca82c96d","exec":["pm.environment.set(\"first_name\", pm.variables.replaceIn('{{$randomFirstName}}'));\r","pm.environment.set(\"last_name\", pm.variables.replaceIn('{{$randomLastName}}'));\r","pm.environment.set(\"email\", pm.variables.replaceIn('{{$randomEmail}}'));\r","pm.environment.set(\"username\", pm.variables.replaceIn('{{$randomUserName}}'));\r","pm.environment.set(\"old_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));\r","pm.environment.set(\"phone_number\", pm.variables.replaceIn('{{$randomPhoneNumber}}'));"],"type":"text/javascript","packages":{}}},{"listen":"test","script":{"id":"d8645c75-51c3-476f-a678-8edff8ab6b16","exec":["pm.test(\"Response is Success 201\", () => {\r","    pm.response.to.have.status(201);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","\r","pm.test(\"Response to have accessToken or JWT Token\", () => {\r","    pm.expect(body).to.have.ownProperty(\"accessToken\");\r","});\r","\r","pm.test(\"Response to have id\", () => {\r","    pm.expect(body).to.have.ownProperty(\"id\");\r","});"],"type":"text/javascript","packages":{}}}],"id":"d7e9530b-32f5-498b-bc84-05dc5924b825","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"POST","header":[],"body":{"mode":"raw","raw":"{\n    \"firstname\": \"{{first_name}}\",\n    \"lastname\": \"{{last_name}}\",\n    \"email\": \"{{email}}\",\n    \"username\": \"{{username}}\",\n    \"password\": \"{{old_password}}\",\n    \"role\": \"3\",\n    \"phone\": \"{{phone_number}}\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/register","host":["localhost"],"port":"4000","path":["register"]}},"response":[]},{"name":"200: OK","event":[{"listen":"test","script":{"id":"20a8c0dc-f730-4ca5-b674-94f4221e1e04","exec":["pm.test(\"Response is Success 200\", () => {\r","    pm.response.to.have.status(200);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","\r","pm.test(\"Response to have accessToken or JWT Token\", () => {\r","    pm.expect(body).to.have.ownProperty(\"accessToken\");\r","});\r","\r","pm.test(\"Response to have user object\", () => {\r","    pm.expect(body).to.have.ownProperty(\"user\");\r","});\r","\r","pm.test(\"Response to have user id\", () => {\r","    pm.expect(body.user).to.have.ownProperty(\"id\");\r","});\r","\r","pm.test(\"Response to have user email\", () => {\r","    pm.expect(body.user).to.have.ownProperty(\"email\");\r","});\r","\r","pm.test(\"Response to have user name\", () => {\r","    pm.expect(body.user).to.have.ownProperty(\"name\");\r","});\r","\r","pm.test(\"Response to have user role\", () => {\r","    pm.expect(body.user).to.have.ownProperty(\"role\");\r","});\r","\r","pm.environment.set(\"User Token\", body.accessToken);"],"type":"text/javascript","packages":{}}},{"listen":"prerequest","script":{"id":"3f91e8a4-7a81-4f68-872d-23d212db71e7","exec":[""],"type":"text/javascript","packages":{}}}],"id":"83545399-0715-43b1-9cbd-79196cd81632","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"POST","header":[],"body":{"mode":"raw","raw":"{\n    \"email\" : \"{{email}}\",\n    \"password\" : \"{{old_password}}\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/login","host":["localhost"],"port":"4000","path":["login"]}},"response":[]},{"name":"400: Missing Parameters","event":[{"listen":"test","script":{"id":"b1b5e408-b55b-4833-be3c-676801f362f6","exec":["pm.test(\"Response is error 400\", () => {\r","    pm.response.to.have.status(400);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","pm.test(\"Response to have message 'Missing required information'\", () => {\r","    pm.expect(body).to.have.ownProperty(\"message\");\r","    pm.expect(body.message).to.eql(\"Missing required information\");\r","});"],"type":"text/javascript","packages":{}}},{"listen":"prerequest","script":{"id":"b377e6a6-a005-434a-9181-92fcd97dbfd8","exec":[],"type":"text/javascript"}}],"id":"a3a6adfc-87f6-4722-bf62-aa22551e02ac","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"POST","header":[],"body":{"mode":"raw","raw":"{\r\n    \"email\" : \"{{email}}\"\r\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/login","host":["localhost"],"port":"4000","path":["login"]}},"response":[]},{"name":"400: Invalid Credentials(Password)","event":[{"listen":"prerequest","script":{"id":"3f8f515a-3b81-4dc5-9525-d699c86eee6a","exec":["\r","pm.environment.set(\"email\", pm.variables.replaceIn('{{$randomEmail}}'));\r",""],"type":"text/javascript","packages":{}}},{"listen":"test","script":{"id":"1efedf8c-9ee8-45d9-b63f-9d2a227dfabd","exec":["pm.test(\"Response is error 400\", () => {\r","    pm.response.to.have.status(400);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","pm.test(\"Response to have message 'Invalid Credentials'\", () => {\r","    pm.expect(body).to.have.ownProperty(\"message\");\r","    pm.expect(body.message).to.eql(\"Invalid Credentials\");\r","});"],"type":"text/javascript","packages":{}}}],"id":"4af50d93-4c7a-4b09-951f-6841e166291e","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"POST","header":[],"body":{"mode":"raw","raw":"{\r\n    \"email\" : \"{{email}}\",\r\n    \"password\" : \"{{old_password}}\"\r\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/login","host":["localhost"],"port":"4000","path":["login"]}},"response":[]},{"name":"400: Invalid Credentials(Email)","event":[{"listen":"prerequest","script":{"id":"6fabf655-c7cb-44e9-8483-cbbf0905aeaf","exec":["pm.environment.set(\"old_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));\r",""],"type":"text/javascript","packages":{}}},{"listen":"test","script":{"id":"c1356202-5774-4fd9-8df2-8d7d5c5bfbbb","exec":["pm.test(\"Response is error 400\", () => {\r","    pm.response.to.have.status(400);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","pm.test(\"Response to have message 'Invalid Credentials'\", () => {\r","    pm.expect(body).to.have.ownProperty(\"message\");\r","    pm.expect(body.message).to.eql(\"Invalid Credentials\");\r","});"],"type":"text/javascript","packages":{}}}],"id":"a5c3f05c-98e5-4ce2-9c38-1a2982552176","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"POST","header":[],"body":{"mode":"raw","raw":"{\r\n    \"email\" : \"{{email}}\",\r\n    \"password\" : \"{{old_password}}\"\r\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/login","host":["localhost"],"port":"4000","path":["login"]}},"response":[]},{"name":"500: Server Error","event":[{"listen":"prerequest","script":{"id":"b7bd6ba5-2108-4e6d-b7dd-560f3df7d55f","exec":["pm.environment.set(\"new_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));"],"type":"text/javascript","packages":{}}},{"listen":"test","script":{"id":"edc71dd7-2557-44bd-8364-88b224ed3aec","exec":["pm.test(\"Response is error 500\", () => {\r","    pm.response.to.have.status(500);\r","});\r","\r","pm.test(\"Response is a valid JSON\", () => {\r","    pm.expect(pm.response).to.be.json;\r","});\r","\r","const body = pm.response.json();\r","pm.test(\"Response to have message 'server error - contact support'\", () => {\r","    pm.expect(body).to.have.ownProperty(\"message\");\r","    pm.expect(body.message).to.eql(\"server error - contact support\");\r","});"],"type":"text/javascript","packages":{}}}],"id":"40c33738-46b2-4f9c-8cd8-25296ca1d08b","protocolProfileBehavior":{"disableBodyPruning":true},"request":{"method":"POST","header":[{"key":"x-access-token","value":"{{User Token}}","type":"text"}],"body":{"mode":"raw","raw":"{\n    \"email\" : \"{{email}}\",\n    \"password\" : \"{{old_password}}\"\n}","options":{"raw":{"language":"json"}}},"url":{"raw":"localhost:4000/login","host":["localhost"],"port":"4000","path":["login"]}},"response":[]}]}
+{
+    "info": {
+        "_postman_id": "8c6c5fa6-ea58-4c1f-9768-579b48460832",
+        "name": "auth/login",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "201: Register Created",
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "5029ea69-71a9-46dc-94d8-068bca82c96d",
+                        "exec": [
+                            "pm.environment.set(\"first_name\", pm.variables.replaceIn('{{$randomFirstName}}'));\r",
+                            "pm.environment.set(\"last_name\", pm.variables.replaceIn('{{$randomLastName}}'));\r",
+                            "pm.environment.set(\"email\", pm.variables.replaceIn('{{$randomEmail}}'));\r",
+                            "pm.environment.set(\"username\", pm.variables.replaceIn('{{$randomUserName}}'));\r",
+                            "pm.environment.set(\"old_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));\r",
+                            "pm.environment.set(\"phone_number\", pm.variables.replaceIn('{{$randomPhoneNumber}}'));"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "d8645c75-51c3-476f-a678-8edff8ab6b16",
+                        "exec": [
+                            "pm.test(\"Response is Success 201\", () => {\r",
+                            "    pm.response.to.have.status(201);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "\r",
+                            "pm.test(\"Response to have accessToken or JWT Token\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"accessToken\");\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response to have id\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"id\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "d7e9530b-32f5-498b-bc84-05dc5924b825",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"firstname\": \"{{first_name}}\",\n    \"lastname\": \"{{last_name}}\",\n    \"email\": \"{{email}}\",\n    \"username\": \"{{username}}\",\n    \"password\": \"{{old_password}}\",\n    \"role\": \"3\",\n    \"phone\": \"{{phone_number}}\"\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/register",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["register"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "200: OK",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "20a8c0dc-f730-4ca5-b674-94f4221e1e04",
+                        "exec": [
+                            "pm.test(\"Response is Success 200\", () => {\r",
+                            "    pm.response.to.have.status(200);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "\r",
+                            "pm.test(\"Response to have accessToken or JWT Token\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"accessToken\");\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response to have user object\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"user\");\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response to have user id\", () => {\r",
+                            "    pm.expect(body.user).to.have.ownProperty(\"id\");\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response to have user email\", () => {\r",
+                            "    pm.expect(body.user).to.have.ownProperty(\"email\");\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response to have user name\", () => {\r",
+                            "    pm.expect(body.user).to.have.ownProperty(\"name\");\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response to have user role\", () => {\r",
+                            "    pm.expect(body.user).to.have.ownProperty(\"role\");\r",
+                            "});\r",
+                            "\r",
+                            "pm.environment.set(\"User Token\", body.accessToken);"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "3f91e8a4-7a81-4f68-872d-23d212db71e7",
+                        "exec": [""],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "83545399-0715-43b1-9cbd-79196cd81632",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"email\" : \"{{email}}\",\n    \"password\" : \"{{old_password}}\"\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/login",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["login"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "400: Missing Parameters",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "b1b5e408-b55b-4833-be3c-676801f362f6",
+                        "exec": [
+                            "pm.test(\"Response is error 400\", () => {\r",
+                            "    pm.response.to.have.status(400);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "pm.test(\"Response to have message 'Missing required information'\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"message\");\r",
+                            "    pm.expect(body.message).to.eql(\"Missing required information\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "b377e6a6-a005-434a-9181-92fcd97dbfd8",
+                        "exec": [],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "id": "a3a6adfc-87f6-4722-bf62-aa22551e02ac",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\r\n    \"email\" : \"{{email}}\"\r\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/login",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["login"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "400: Invalid Credentials(Password)",
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "3f8f515a-3b81-4dc5-9525-d699c86eee6a",
+                        "exec": [
+                            "\r",
+                            "pm.environment.set(\"email\", pm.variables.replaceIn('{{$randomEmail}}'));\r",
+                            ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "1efedf8c-9ee8-45d9-b63f-9d2a227dfabd",
+                        "exec": [
+                            "pm.test(\"Response is error 400\", () => {\r",
+                            "    pm.response.to.have.status(400);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "pm.test(\"Response to have message 'Invalid Credentials'\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"message\");\r",
+                            "    pm.expect(body.message).to.eql(\"Invalid Credentials\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "4af50d93-4c7a-4b09-951f-6841e166291e",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\r\n    \"email\" : \"{{email}}\",\r\n    \"password\" : \"{{old_password}}\"\r\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/login",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["login"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "400: Invalid Credentials(Email)",
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "6fabf655-c7cb-44e9-8483-cbbf0905aeaf",
+                        "exec": [
+                            "pm.environment.set(\"old_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));\r",
+                            ""
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "c1356202-5774-4fd9-8df2-8d7d5c5bfbbb",
+                        "exec": [
+                            "pm.test(\"Response is error 400\", () => {\r",
+                            "    pm.response.to.have.status(400);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "pm.test(\"Response to have message 'Invalid Credentials'\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"message\");\r",
+                            "    pm.expect(body.message).to.eql(\"Invalid Credentials\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "a5c3f05c-98e5-4ce2-9c38-1a2982552176",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\r\n    \"email\" : \"{{email}}\",\r\n    \"password\" : \"{{old_password}}\"\r\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/login",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["login"]
+                }
+            },
+            "response": []
+        },
+        {
+            "name": "500: Server Error",
+            "event": [
+                {
+                    "listen": "prerequest",
+                    "script": {
+                        "id": "b7bd6ba5-2108-4e6d-b7dd-560f3df7d55f",
+                        "exec": [
+                            "pm.environment.set(\"new_password\", pm.variables.replaceIn('{{$randomPassword}}' + \"@\" + \"1\"));"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                },
+                {
+                    "listen": "test",
+                    "script": {
+                        "id": "edc71dd7-2557-44bd-8364-88b224ed3aec",
+                        "exec": [
+                            "pm.test(\"Response is error 500\", () => {\r",
+                            "    pm.response.to.have.status(500);\r",
+                            "});\r",
+                            "\r",
+                            "pm.test(\"Response is a valid JSON\", () => {\r",
+                            "    pm.expect(pm.response).to.be.json;\r",
+                            "});\r",
+                            "\r",
+                            "const body = pm.response.json();\r",
+                            "pm.test(\"Response to have message 'server error - contact support'\", () => {\r",
+                            "    pm.expect(body).to.have.ownProperty(\"message\");\r",
+                            "    pm.expect(body.message).to.eql(\"server error - contact support\");\r",
+                            "});"
+                        ],
+                        "type": "text/javascript",
+                        "packages": {}
+                    }
+                }
+            ],
+            "id": "40c33738-46b2-4f9c-8cd8-25296ca1d08b",
+            "protocolProfileBehavior": { "disableBodyPruning": true },
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "x-access-token",
+                        "value": "{{User Token}}",
+                        "type": "text"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n    \"email\" : \"{{email}}\",\n    \"password\" : \"{{old_password}}\"\n}",
+                    "options": { "raw": { "language": "json" } }
+                },
+                "url": {
+                    "raw": "localhost:4000/login",
+                    "host": ["localhost"],
+                    "port": "4000",
+                    "path": ["login"]
+                }
+            },
+            "response": []
+        }
+    ]
+}
