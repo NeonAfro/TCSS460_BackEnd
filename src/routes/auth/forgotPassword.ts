@@ -152,7 +152,7 @@ forgotPasswordRouter.put(
             .then((result) => {
                 if (result.rows.length == 0) {
                     response.status(404).send({
-                        message: 'User does not exist',
+                        message: 'User does not exist within the Database',
                     });
                 } else {
                     request.id = result.rows[0].account_id;
