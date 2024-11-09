@@ -172,7 +172,7 @@ bookRouter.get(
         FROM books WHERE authors=$1 
         ORDER BY id`;
 
-            const values = [request.query.author];
+            const values = [request.params.author];
 
             const { rows } = await pool.query(theQuery, values);
 
