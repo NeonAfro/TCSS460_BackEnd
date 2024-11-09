@@ -65,7 +65,7 @@ const isValidEmail = (email: string): boolean => email.includes('@');
  * @apiSuccess (200: OK) {string} message "Password updated successfully"
  * @apiSuccess (200: OK) {string} resetToken a newly created JWT
  *
- * @apiError (400: Missing Parameters) {String} message "Missing required information"
+ * @apiError (400: Missing Parameters) {String} message "Missing a parameter"
  * @apiError (400: Password Mismatch) {String} message "The passwords do not match"
  * @apiError (400: Invalid Email) {String} message "Invalid email - please refer to registration documentation"
  * @apiError (400: Invalid PhoneNumber) {String} message "Invalid phone number - please refer to registration documentation"
@@ -94,7 +94,7 @@ forgotPasswordRouter.put(
             next();
         } else {
             response.status(400).send({
-                message: 'Missing required information',
+                message: 'Missing a parameter',
             });
         }
     },
