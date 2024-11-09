@@ -761,13 +761,7 @@ bookRouter.delete(
     mwValidBookDeleteSeries,
     async (request: Request, response: Response) => {
         try {
-            const { seriesName } = request.query;
-
-            if (!seriesName) {
-                return response.status(400).send({
-                    message: 'Series name is required',
-                });
-            }
+            const { seriesName } = request.params;
 
             // Define the delete query for series entries with pattern matching
             const seriesQuery = `
