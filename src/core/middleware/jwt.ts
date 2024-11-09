@@ -36,7 +36,7 @@ export const checkToken = (
     } else {
         return response.status(401).json({
             success: false,
-            message: 'Auth token is not supplied',
+            message: 'Invalid or missing JWT token',
         });
     }
 };
