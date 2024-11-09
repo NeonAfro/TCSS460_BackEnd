@@ -464,7 +464,7 @@ bookRouter.post(
     '/',
     mwValidBookBody,
     async (request: Request, response: Response) => {
-        const { title, author, date, isbn, message } = request.body;
+        const { title, author, date, isbn } = request.body;
 
         try {
             // Step 1: Check for existing book by ISBN
@@ -481,10 +481,10 @@ bookRouter.post(
 
             // Step 2: Insert the new book into the database
             const insertQuery = `
-                INSERT INTO books (title, authors, isbn13, publication_year, message) 
-                VALUES ($1, $2, $3, $4, $5) RETURNING *;
+                INSERT INTO books (title, authors, isbn13, publication_year) 
+                VALUES ($1, $2, $3, $4) RETURNING *;
             `;
-            const values = [title, author, isbn, date, message || null];
+            const values = [title, author, isbn, date];
             const insertResult = await pool.query(insertQuery, values);
 
             // Step 3: Respond with the created book data
