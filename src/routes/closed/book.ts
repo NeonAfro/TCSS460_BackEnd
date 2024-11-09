@@ -435,7 +435,7 @@ function mwValidBookBody(
 }
 
 /**
- * @api {post} /newBook Request to add a new book
+ * @api {post} /book/newBook Request to add a new book
  *
  * @apiDescription Request to add a new book with title, author, published date, ISBN, and an optional message.
  *
@@ -529,7 +529,7 @@ function mwValidBookRating(
 }
 
 /**
- * @api {put} /book Request to change an entry
+ * @api {put} /book/rate/:id Request to change an entry
  *
  * @apiDescription Request to replace or change the rating of a book
  *
@@ -554,7 +554,7 @@ function mwValidBookRating(
  * @apiUse DBError
  */
 bookRouter.put(
-    '/:id',
+    '/rate/:rating',
     mwValidBookRating,
     async (request: Request, response: Response) => {
         const { id } = request.params;
@@ -661,7 +661,7 @@ function mwValidBookDeleteISBN(
 }
 
 /**
- * @api {delete} /book/:isbn Request to delete a book by ISBN
+ * @api {delete} /book/del/:isbn Request to delete a book by ISBN
  *
  * @apiDescription Request to delete a specific book entry by providing its ISBN.
  *
@@ -680,7 +680,7 @@ function mwValidBookDeleteISBN(
  * @apiUse DBError
  */
 bookRouter.delete(
-    '/:isbn',
+    '/del/:isbn',
     mwValidBookDeleteISBN,
     async (request: Request, response: Response) => {
         try {
@@ -736,7 +736,7 @@ function mwValidBookDeleteSeries(
 }
 
 /**
- * @api {delete} /book Delete a range of books by series name or a standalone book by exact title.
+ * @api {delete} /book/del/:seriesName Delete a range of books by series name or a standalone book by exact title.
  *
  * @apiDescription Deletes all books within the specified series by matching series titles that contain the given series name
  * in parentheses, such as "(Series Name, #...)".
@@ -759,7 +759,7 @@ function mwValidBookDeleteSeries(
  * @apiUse DBError
  */
 bookRouter.delete(
-    '/',
+    '/del/:seriesName',
     mwValidBookDeleteSeries,
     async (request: Request, response: Response) => {
         try {
