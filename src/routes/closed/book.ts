@@ -479,7 +479,8 @@ bookRouter.post(
                 });
             }
             const maxQuery = 'SELECT MAX(id) AS max_id FROM books';
-            const newID = await pool.query(maxQuery);
+            const maxResult = await pool.query(maxQuery);
+            const newID = maxResult.rows[0].max_id !== null ? maxResult.rows[0].max_id + 1 : 1;
 
             // Step 2: Insert the new book into the database
             const insertQuery = `
