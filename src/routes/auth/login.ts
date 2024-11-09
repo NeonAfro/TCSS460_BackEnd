@@ -35,12 +35,12 @@ const key = {
  * @apiBody {String} email a user's email
  * @apiBody {String} password a user's password
  *
- * @apiSuccess {String} accessToken JSON Web Token
- * @apiSuccess {Object} user a user object
- * @apiSuccess {string} user.id the unique identifier of the user
- * @apiSuccess {string} user.email the email associated with the user
- * @apiSuccess {string} user.name the first name associated with the user
- * @apiSuccess {string} user.role the role of the user
+ * @apiSuccess (200: OK) {String} accessToken JSON Web Token
+ * @apiSuccess (200: OK) {Object} user a user object
+ * @apiSuccess (200: OK) {string} user.id the unique identifier of the user
+ * @apiSuccess (200: OK) {string} user.email the email associated with the user
+ * @apiSuccess (200: OK) {string} user.name the first name associated with the user
+ * @apiSuccess (200: OK) {string} user.role the role of the user
  *
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Invalid Credentials) {String} message "Invalid Credentials"
