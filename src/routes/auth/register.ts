@@ -110,7 +110,7 @@ const emailMiddlewareCheck = (
  * @apiError (400: Invalid Password) {String} message "Invalid or missing password - please refer to documentation"
  * @apiError (400: Invalid Phone) {String} message "Invalid or missing phone number - please refer to documentation"
  * @apiError (400: Invalid Email) {String} message "Invalid or missing email - please refer to documentation"
- * @apiError (400: Invalid Role) {String} message "Invalid or missing role - please refer to documentation"
+ * @apiError (400: Invalid Role) {String} message "Invalid or missing role - Must be between 1 and 5"
  * @apiError (400: Username exists) {String} message "Username exists"
  * @apiError (400: Email exists) {String} message "Email exists"
  * @apiError (400: Password exists) {String} message "Password exists"
@@ -161,8 +161,7 @@ registerRouter.post(
             next();
         } else {
             response.status(400).send({
-                message:
-                    'Invalid or missing role - please refer to documentation',
+                message: 'Invalid or missing role - Must be between 1 and 5',
             });
         }
     },
