@@ -62,7 +62,6 @@ const isValidNewPassword = (newPassword: string): boolean =>
  * @apiError (400: Missing Parameters) {String} message "Missing a parameter"
  * @apiError (400: Password Mismatch) {String} message "The passwords do not match"
  * @apiError (400: Invalid NewPassword) {String} message "Invalid New Password  - please refer to documentation"
- * @apiError (404: User does not exist) {String} message "User does not exist"
  * @apiError (400: Invalid OldPassword) {String} message "Old Password is not correct for User"
  * @apiError (401: Unauthorized) {String} message "Invalid or missing JWT token"
  * @apiError (403: Forbidden) {String} message "Token is not valid"
