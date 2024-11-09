@@ -32,9 +32,9 @@ const isValidPassword = (newPassword: string): boolean =>
     newPassword.length <= 24 &&
     /[!@#$%^&*()_+=-]/.test(newPassword) &&
     /\d/.test(newPassword) &&
-    /[a-z]/.test(newPassword) && 
-    /[A-Z]/.test(newPassword);;
-    
+    /[a-z]/.test(newPassword) &&
+    /[A-Z]/.test(newPassword);
+
 // Add more/your own phone number validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
 const isValidPhone = (phone: string): boolean =>
@@ -43,8 +43,7 @@ const isValidPhone = (phone: string): boolean =>
 // Add more/your own role validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
 const isValidRole = (priority: string): boolean =>
-    parseInt(priority) >= 1 &&
-    parseInt(priority) <= 5;
+    parseInt(priority) >= 1 && parseInt(priority) <= 5;
 
 // Add more/your own email validation here. The *rules* must be documented
 // and the client-side validation should match these rules.
@@ -61,8 +60,7 @@ const emailMiddlewareCheck = (
         next();
     } else {
         response.status(400).send({
-            message:
-                'Invalid Email  - please refer to documentation',
+            message: 'Invalid Email  - please refer to documentation',
         });
     }
 };
@@ -71,29 +69,29 @@ const emailMiddlewareCheck = (
  * @api {post} /register Request to register a user
  *
  * @apiDescription Request to register a user<br>
- * 
+ *
  * <ul> <b>Firstname/Lastname:</b>
  *      <li> Must only contain EN-US characters (a-Z)</li>
  * </ul>
- * 
+ *
  * <ul> <b>Password:</b>
  *      <li> Must be between 8 to 24 characters long</li>
  *      <li> Must include both uppercase and lowercase letters </li>
  *      <li> Must contain at least one numeric digit and special character </li>
  * </ul>
- * 
+ *
  * <ul> <b>Email:</b>
  *      <li> Must contain an @ sign with email service provider</li>
  * </ul>
- * 
+ *
  * <ul> <b>Role:</b>
  *      <li> a role will signify privileges on the account (1 = highest, 5 = lowest)</li>
  * </ul>
- * 
+ *
  * <ul> <b>Phone Number:</b>
  *      <li> Phone number must be in international format (X-XXX-XXX-XXXX)</li>
  * </ul>
- * 
+ *
  * @apiName PostRegister
  * @apiGroup Register
  *
@@ -105,8 +103,8 @@ const emailMiddlewareCheck = (
  * @apiBody {String} role a role for this user [1-5]
  * @apiBody {String} phone a phone number for this user
  *
- * @apiSuccess (Success 201) {string} accessToken a newly created JWT
- * @apiSuccess (Success 201) {number} id unique user id
+ * @apiSuccess (200: OK) {string} accessToken a newly created JWT
+ * @apiSuccess (200: OK) {number} id unique user id
  *
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Invalid Password) {String} message "Invalid or missing password  - please refer to documentation"
@@ -140,19 +138,18 @@ registerRouter.post(
             return;
         } else {
             response.status(400).send({
-                message:
-                    'Invalid Phone Number - please refer to documentation',
+                message: 'Invalid Phone Number - please refer to documentation',
             });
             return;
         }
-    }, emailMiddlewareCheck,
+    },
+    emailMiddlewareCheck,
     (request: Request, response: Response, next: NextFunction) => {
         if (isValidPassword(request.body.password)) {
             next();
         } else {
             response.status(400).send({
-                message:
-                    'Invalid Password - please refer to documentation',
+                message: 'Invalid Password - please refer to documentation',
             });
         }
     },
@@ -161,8 +158,7 @@ registerRouter.post(
             next();
         } else {
             response.status(400).send({
-                message:
-                    'Invalid Role  - please refer to documentation',
+                message: 'Invalid Role  - please refer to documentation',
             });
         }
     },
