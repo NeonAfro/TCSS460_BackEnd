@@ -107,7 +107,7 @@ const emailMiddlewareCheck = (
  * @apiSuccess (200: OK) {number} id unique user id
  *
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
- * @apiError (400: Invalid Password) {String} message "Invalid or missing password  - please refer to documentation"
+ * @apiError (400: Invalid Password) {String} message "Invalid or missing password - please refer to documentation"
  * @apiError (400: Invalid Phone) {String} message "Invalid or missing phone number  - please refer to documentation"
  * @apiError (400: Invalid Email) {String} message "Invalid or missing email  - please refer to documentation"
  * @apiError (400: Invalid Role) {String} message "Invalid or missing role  - please refer to documentation"
