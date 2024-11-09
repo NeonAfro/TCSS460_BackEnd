@@ -478,13 +478,15 @@ bookRouter.post(
                     message: 'Book with ISBN already exists',
                 });
             }
+            const maxQuery = 'SELECT MAX(id) AS max_id FROM books';
+            const newID = await pool.query(maxQuery);
 
             // Step 2: Insert the new book into the database
             const insertQuery = `
-                INSERT INTO books (title, authors, isbn13, publication_year) 
-                VALUES ($1, $2, $3, $4) RETURNING *;
+                INSERT INTO books (title, authors, isbn13, publication_year, id) 
+                VALUES ($1, $2, $3, $4, $5) RETURNING *;
             `;
-            const values = [title, author, isbn, date];
+            const values = [title, author, isbn, date, newID];
             const insertResult = await pool.query(insertQuery, values);
 
             // Step 3: Respond with the created book data
