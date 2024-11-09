@@ -734,7 +734,7 @@ function mwValidBookDeleteSeries(
     next();
 }
 
-// exists just to catch empty paramater
+// solely exists to catch empty params for /series route
 bookRouter.delete('/series', (request, response) => {
     return response.status(400).send({
         message: 'Series name is required',
