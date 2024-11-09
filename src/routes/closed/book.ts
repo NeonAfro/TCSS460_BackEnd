@@ -763,12 +763,6 @@ bookRouter.delete(
         try {
             const { seriesName } = request.query;
 
-            if (!seriesName) {
-                return response.status(400).send({
-                    message: 'Series name is required',
-                });
-            }
-
             // Define the delete query for series entries with pattern matching
             const seriesQuery = `
                 DELETE FROM books 
