@@ -504,7 +504,7 @@ bookRouter.post(
             const formattedRows = rows.map(format);
 
             // Step 3: Respond with the created book data 
-            response.status(200).send({
+            response.status(201).send({
                 entries: rows.map(format),
                 message: 'Book added successfully',
             });
