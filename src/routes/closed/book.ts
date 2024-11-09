@@ -766,7 +766,7 @@ bookRouter.delete(
             // Define the delete query for series entries with pattern matching
             const seriesQuery = `
                 DELETE FROM books 
-                WHERE title ILIKE '%(' || $1 || ', #%'
+                WHERE title ILIKE '%' || $1 || ' (%#%'
                 RETURNING *;
             `;
 
