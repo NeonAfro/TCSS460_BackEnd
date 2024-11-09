@@ -72,11 +72,9 @@ const isValidEmail = (email: string): boolean => email.includes('@');
  * @apiError (400: Invalid NewPassword) {String} message "Invalid new password - please refer to documentation"
  * @apiError (404: User does not exist) {String} message "User does not exist within the Database"
  *
- * @apiError (500: DB Query Error) {String} message "Unexpected issue on account retrieval for DB"
- * @apiError (500: Server Error) {String} message "Unexpected issue on retrieving request"
- * @apiError (500: Password Update Error) {String} message "Error updating password in the database"
- *
- * @apiUse DBError
+ * @apiError (500: DB Query Error) {String} message "Unexpected issue on account retrieval in the database"
+ * @apiError (500: Server Error) {String} message "Unexpected issue on retrieving user in the database"
+ * @apiError (500: Password Update Error) {String} message "Unexpected issue on updating password in the database"
  */
 forgotPasswordRouter.put(
     '/forgotPassword',
@@ -163,13 +161,16 @@ forgotPasswordRouter.put(
                 console.error('DB Query Error');
                 console.error(error);
                 response.status(500).send({
-                    message: 'DB Query Error',
+                    message:
+                        'Unexpected issue on account retrieval in the database',
                 });
             });
     },
     (request: IUserRequest, response: Response) => {
         if (!request.id) {
-            response.status(500).send({ message: 'Server Error' });
+            response.status(500).send({
+                message: 'Unexpected issue on retrieving user in the database',
+            });
             return;
         }
 
@@ -198,7 +199,8 @@ forgotPasswordRouter.put(
                 console.error('Password Update Error');
                 console.error(error);
                 response.status(500).send({
-                    message: 'Password Update Error',
+                    message:
+                        'Unexpected issue on updating password in the database',
                 });
             });
     }
