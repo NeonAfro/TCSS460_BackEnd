@@ -489,8 +489,15 @@ bookRouter.post(
 
             // Step 2: Insert the new book into the database
             const insertQuery = `
-                INSERT INTO books (title, authors, isbn13, publication_year, id) 
-                VALUES ($1, $2, $3, $4, $5) RETURNING *;
+                INSERT INTO books (title, authors, isbn13, publication_year, id, original_title, 
+                    rating_avg,
+                    rating_count,
+                    rating_1_star,
+                    rating_2_star,
+                    rating_3_star,
+                    rating_4_star,
+                    rating_5_star,) 
+                VALUES ($1, $2, $3, $4, $5, $1, 0, 0, 0, 0, 0, 0, 0) RETURNING *;
             `;
             const values = [title, author, isbn, date, newID];
             const insertResult = await pool.query(insertQuery, values);
