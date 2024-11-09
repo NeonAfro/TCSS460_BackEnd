@@ -111,8 +111,7 @@ forgotPasswordRouter.put(
             return;
         } else {
             response.status(400).send({
-                message:
-                    'Invalid new password  - please refer to documentation',
+                message: 'Invalid new password - please refer to documentation',
             });
             return;
         }
