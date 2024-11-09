@@ -382,6 +382,7 @@ bookRouter.get('/year/:year', async (request: Request, response: Response) => {
             response.status(404).send({
                 message: 'No Books with the publication year given was found',
             });
+            return;
         }
 
         const formattedRows = rows.map(format);
@@ -390,6 +391,7 @@ bookRouter.get('/year/:year', async (request: Request, response: Response) => {
         response.send({
             entries: rows.map(format),
         });
+        return;
     } catch (error) {
         console.error('Error executing query:', error);
         response.status(500).send({
