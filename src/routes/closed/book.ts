@@ -659,7 +659,7 @@ function mwValidBookDeleteISBN(
 }
 
 /**
- * @api {delete} /book/del/:isbn Request to delete a book by ISBN
+ * @api {delete} /book/isbn/:isbn Request to delete a book by ISBN
  *
  * @apiDescription Request to delete a specific book entry by providing its ISBN.
  *
@@ -678,7 +678,7 @@ function mwValidBookDeleteISBN(
  * @apiUse DBError
  */
 bookRouter.delete(
-    '/del/:isbn',
+    '/isbn/:isbn',
     mwValidBookDeleteISBN,
     async (request: Request, response: Response) => {
         try {
@@ -734,7 +734,7 @@ function mwValidBookDeleteSeries(
 }
 
 /**
- * @api {delete} /book/del/:seriesName Delete a range of books by series name or a standalone book by exact title.
+ * @api {delete} /book/series/:seriesName Delete a range of books by series name or a standalone book by exact title.
  *
  * @apiDescription Deletes all books within the specified series by matching series titles that contain the given series name
  * in parentheses, such as "(Series Name, #...)".
@@ -757,7 +757,7 @@ function mwValidBookDeleteSeries(
  * @apiUse DBError
  */
 bookRouter.delete(
-    '/del/:seriesName',
+    '/series/:seriesName',
     mwValidBookDeleteSeries,
     async (request: Request, response: Response) => {
         try {
