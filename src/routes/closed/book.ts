@@ -530,7 +530,7 @@ function mwValidBookRating(
 }
 
 /**
- * @api {put} /book/rate/:rating Request to change an entry
+ * @api {put} /book/rate/:id Request to change an entry
  *
  * @apiDescription Request to replace or change the rating of a book
  *
@@ -539,10 +539,7 @@ function mwValidBookRating(
  *
  * @apiUse JWT
  *
- * @apiBody {String} title the title of the book entry
- * @apiBody {String} author the author of the book entry
- * @apiBody {number} rating the rating that the book rating will be updated to
- * @apiBody {string} [message] An optional message or note associated with the book rating
+ * @apiParam {number} id of book to be updated.
  *
  * @apiSuccess (200: OK) {Object} entry Details of the updated book entry.
  * @apiSuccess (200: OK) {String} entry.title The title of the updated book.
@@ -555,8 +552,8 @@ function mwValidBookRating(
  * @apiUse DBError
  */
 bookRouter.put(
-    '/rate/:rating',
-    mwValidBookRating,
+    '/rate/:id',
+    //mwValidBookRating,
     async (request: Request, response: Response) => {
         const { id } = request.params;
         const {
