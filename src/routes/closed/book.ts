@@ -435,7 +435,7 @@ function mwValidBookBody(
 }
 
 /**
- * @api {post} /book Request to add a new book
+ * @api {post} /newBook Request to add a new book
  *
  * @apiDescription Request to add a new book with title, author, published date, ISBN, and an optional message.
  *
@@ -461,7 +461,7 @@ function mwValidBookBody(
  * @apiUse DBError
  */
 bookRouter.post(
-    '/',
+    '/newBook',
     mwValidBookBody,
     async (request: Request, response: Response) => {
         const { title, author, date, isbn, message } = request.body;
