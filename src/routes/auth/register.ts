@@ -89,7 +89,7 @@ const emailMiddlewareCheck = (
  * </ul>
  *
  * <ul> <b>Phone Number:</b>
- *      <li> Phone number must be in international format (X-XXX-XXX-XXXX)</li>
+ *      <li> Phone number must be in format (XXX-XXX-XXXX)</li>
  * </ul>
  *
  * @apiName PostRegister

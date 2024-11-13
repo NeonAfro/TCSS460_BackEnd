@@ -13,7 +13,7 @@ const format = (row) => ({
         publication: row.publication_year,
         original_title: row.original_title,
         title: row.title,
-        IRatings: {
+        ratings: {
             average: row.rating_avg,
             count: row.rating_count,
             rating_1: row.rating_1_star,
@@ -22,7 +22,7 @@ const format = (row) => ({
             rating_4: row.rating_4_star,
             rating_5: row.rating_5_star,
         } as IRatings,
-        IUrlIcon: {
+        icons: {
             large: row.image_url,
             small: row.image_small_url,
         } as IUrlIcon,
@@ -75,14 +75,18 @@ interface IBookRequest extends Request {
  * @apiSuccess (200: OK) {String} entries.IBook.authors List of authors of the book.
  * @apiSuccess (200: OK) {Number} entries.IBook.publication_year Year the book was published.
  *
- * @apiSuccess (200: OK) {Object} entries.IBook.IRatings Ratings
- * @apiSuccess (200: OK) {Number} entries.IBook.IRatings.rating_avg Average rating of the book.
- * @apiSuccess (200: OK) {Number} entries.IBook.IRatings.rating_count Total ratings count.
- * @apiSuccess (200: OK) {Number} entries.IBook.IRatings.rating_1_star Count of 1-star ratings.
+ * @apiSuccess (200: OK) {Object} entries.IBook.ratings Ratings
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_avg Average rating of the book.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_count Total ratings count.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_1_star Count of 1-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_2_star Count of 2-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_3_star Count of 3-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_4_star Count of 4-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_5_star Count of 5-star ratings.
  *
- * @apiSuccess (200: OK) {Object} entries.IBook.IUrlIcon Icons
- * @apiSuccess (200: OK) {String} entries.IBook.IUrlIcon.image_url URL of the book's cover image.
- * @apiSuccess (200: OK) {String} entries.IBook.IUrlIcon.image_small_url Small image URL.
+ * @apiSuccess (200: OK) {Object} entries.IBook.icons Icons
+ * @apiSuccess (200: OK) {String} entries.IBook.icons.image_url URL of the book's cover image.
+ * @apiSuccess (200: OK) {String} entries.IBook.icons.image_small_url Small image URL.
  *
  * @apiSuccess (200: OK) {Object} pagination metadata results from this paginated query
  * @apiSuccess (200: OK) {number} pagination.totalRecords the most recent count on the total amount of entries. May be stale.
@@ -152,7 +156,25 @@ bookRouter.get('/all', async (request: Request, response: Response) => {
  *
  * @apiParam {String} author The author to look up.
  *
- * @apiSuccess (200: OK) {Object[]} entry List of book objects by the specified author.
+ * @apiSuccess (200: OK) {Object[]} entries List of all book entrie(s) from the author.
+ * @apiSuccess (200: OK) {Number} entries.id Unique identifier of the book.
+ * @apiSuccess (200: OK) {Object} entries.IBook Individual book entry.
+ * @apiSuccess (200: OK) {Number} entries.IBook.isbn13 13-digit ISBN number of the book.
+ * @apiSuccess (200: OK) {String} entries.IBook.authors List of authors of the book.
+ * @apiSuccess (200: OK) {Number} entries.IBook.publication_year Year the book was published.
+ *
+ * @apiSuccess (200: OK) {Object} entries.IBook.ratings Ratings
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_avg Average rating of the book.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_count Total ratings count.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_1_star Count of 1-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_2_star Count of 2-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_3_star Count of 3-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_4_star Count of 4-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_5_star Count of 5-star ratings.
+ *
+ * @apiSuccess (200: OK) {Object} entries.IBook.icons Icons
+ * @apiSuccess (200: OK) {String} entries.IBook.icons.image_url URL of the book's cover image.
+ * @apiSuccess (200: OK) {String} entries.IBook.icons.image_small_url Small image URL.
  *
  * @apiError (404: Name Not Found) {string} message "Author not found"
  *
@@ -202,7 +224,25 @@ bookRouter.get(
  *
  * @apiParam {String} isbn The ISBN to look up.
  *
- * @apiSuccess (200: OK) {Object} entry The book object containing information of the book with the specified ISBN.
+ * @apiSuccess (200: OK) {Object[]} entries List of all book entrie(s) (should be one entry) with the specified ISBN.
+ * @apiSuccess (200: OK) {Number} entries.id Unique identifier of the book.
+ * @apiSuccess (200: OK) {Object} entries.IBook Individual book entry.
+ * @apiSuccess (200: OK) {Number} entries.IBook.isbn13 13-digit ISBN number of the book.
+ * @apiSuccess (200: OK) {String} entries.IBook.authors List of authors of the book.
+ * @apiSuccess (200: OK) {Number} entries.IBook.publication_year Year the book was published.
+ *
+ * @apiSuccess (200: OK) {Object} entries.IBook.ratings Ratings
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_avg Average rating of the book.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_count Total ratings count.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_1_star Count of 1-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_2_star Count of 2-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_3_star Count of 3-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_4_star Count of 4-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_5_star Count of 5-star ratings.
+ *
+ * @apiSuccess (200: OK) {Object} entries.IBook.icons Icons
+ * @apiSuccess (200: OK) {String} entries.IBook.icons.image_url URL of the book's cover image.
+ * @apiSuccess (200: OK) {String} entries.IBook.icons.image_small_url Small image URL.
  *
  * @apiError (404: Not Found) {string} message "ISBN not found"
  *
@@ -249,7 +289,25 @@ bookRouter.get('/isbn/:isbn', async (request: Request, response: Response) => {
  *
  * @apiParam {String} title The title to look up.
  *
- * @apiSuccess (200: OK) {Object} entry The book object containing information of the book with the specified title.
+ * @apiSuccess (200: OK) {Object[]} entries List of all book entrie(s) with the specified title.
+ * @apiSuccess (200: OK) {Number} entries.id Unique identifier of the book.
+ * @apiSuccess (200: OK) {Object} entries.IBook Individual book entry.
+ * @apiSuccess (200: OK) {Number} entries.IBook.isbn13 13-digit ISBN number of the book.
+ * @apiSuccess (200: OK) {String} entries.IBook.authors List of authors of the book.
+ * @apiSuccess (200: OK) {Number} entries.IBook.publication_year Year the book was published.
+ *
+ * @apiSuccess (200: OK) {Object} entries.IBook.ratings Ratings
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_avg Average rating of the book.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_count Total ratings count.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_1_star Count of 1-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_2_star Count of 2-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_3_star Count of 3-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_4_star Count of 4-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_5_star Count of 5-star ratings.
+ *
+ * @apiSuccess (200: OK) {Object} entries.IBook.icons Icons
+ * @apiSuccess (200: OK) {String} entries.IBook.icons.image_url URL of the book's cover image.
+ * @apiSuccess (200: OK) {String} entries.IBook.icons.image_small_url Small image URL.
  *
  * @apiError (404: Not Found) {string} message "Title not found"
  *
@@ -299,7 +357,25 @@ bookRouter.get(
  *
  * @apiParam {String} rating The rating to look up.
  *
- * @apiSuccess (200: OK) {Object[]} entry List of book objects with the specified rating.
+ * @apiSuccess (200: OK) {Object[]} entries List of all book entrie(s) with the specified rating.
+ * @apiSuccess (200: OK) {Number} entries.id Unique identifier of the book.
+ * @apiSuccess (200: OK) {Object} entries.IBook Individual book entry.
+ * @apiSuccess (200: OK) {Number} entries.IBook.isbn13 13-digit ISBN number of the book.
+ * @apiSuccess (200: OK) {String} entries.IBook.authors List of authors of the book.
+ * @apiSuccess (200: OK) {Number} entries.IBook.publication_year Year the book was published.
+ *
+ * @apiSuccess (200: OK) {Object} entries.IBook.ratings Ratings
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_avg Average rating of the book.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_count Total ratings count.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_1_star Count of 1-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_2_star Count of 2-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_3_star Count of 3-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_4_star Count of 4-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_5_star Count of 5-star ratings.
+ *
+ * @apiSuccess (200: OK) {Object} entries.IBook.icons Icons
+ * @apiSuccess (200: OK) {String} entries.IBook.icons.image_url URL of the book's cover image.
+ * @apiSuccess (200: OK) {String} entries.IBook.icons.image_small_url Small image URL.
  *
  * @apiError (404: Not Found) {string} message "Books with given rating not found"
  *
@@ -356,7 +432,25 @@ bookRouter.get(
  *
  * @apiQuery {Number} year The year in which to retrieve all entries.
  *
- * @apiSuccess (200: OK) {String[]} entries The aggregate of all entries with the specified year.
+ * @apiSuccess (200: OK) {Object[]} entries List of all book entrie(s) with the specified year.
+ * @apiSuccess (200: OK) {Number} entries.id Unique identifier of the book.
+ * @apiSuccess (200: OK) {Object} entries.IBook Individual book entry.
+ * @apiSuccess (200: OK) {Number} entries.IBook.isbn13 13-digit ISBN number of the book.
+ * @apiSuccess (200: OK) {String} entries.IBook.authors List of authors of the book.
+ * @apiSuccess (200: OK) {Number} entries.IBook.publication_year Year the book was published.
+ *
+ * @apiSuccess (200: OK) {Object} entries.IBook.ratings Ratings
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_avg Average rating of the book.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_count Total ratings count.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_1_star Count of 1-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_2_star Count of 2-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_3_star Count of 3-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_4_star Count of 4-star ratings.
+ * @apiSuccess (200: OK) {Number} entries.IBook.ratings.rating_5_star Count of 5-star ratings.
+ *
+ * @apiSuccess (200: OK) {Object} entries.IBook.icons Icons
+ * @apiSuccess (200: OK) {String} entries.IBook.icons.image_url URL of the book's cover image.
+ * @apiSuccess (200: OK) {String} entries.IBook.icons.image_small_url Small image URL.
  *
  * @apiError (404: Not Found) {String} message "No Books with the publication year given was found"
  *
@@ -761,7 +855,7 @@ bookRouter.delete('/series', (request, response) => {
  *
  * @apiUse JWT
  *
- * @apiQuery {String} seriesName The name of the series to be deleted or the exact title of a standalone book.
+ * @apiParam {String} seriesName The name of the series to be deleted or the exact title of a standalone book.
  *
  * @apiSuccess (200: OK) {String} message "Successfully deleted <code>count</code> books within the specified series"
  * or "Successfully deleted the standalone book titled <code>seriesName</code>".
