@@ -44,11 +44,6 @@ interface IBookRequest extends Request {
  */
 
 /**
- * @apiDefine JSONError
- * @apiError (400: JSON Error) {String} message "malformed JSON in parameters"
- */
-
-/**
  * @apiDefine InvalidJWT
  * @apiError (401: Unauthorized) {String} message "Invalid or missing JWT token"
  */
@@ -500,10 +495,10 @@ bookRouter.post(
                 VALUES ($1, $2, $3, $4, $5, $1, 2.5, 1, 1, 1, 1, 1, 1) RETURNING *;
             `;
             const values = [title, author, isbn, date, newID];
-            const {rows} = await pool.query(insertQuery, values);
+            const { rows } = await pool.query(insertQuery, values);
             const formattedRows = rows.map(format);
 
-            // Step 3: Respond with the created book data 
+            // Step 3: Respond with the created book data
             response.status(201).send({
                 entries: rows.map(format),
                 message: 'Book added successfully',

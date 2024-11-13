@@ -52,7 +52,6 @@ const isValidNewPassword = (newPassword: string): boolean =>
  *
  * @apiHeader {String} Authorization The string "Bearer " + a valid JSON Web Token (JWT).
  *
- * @apiBody {String} username a username *unique
  * @apiBody {String} oldPassword a users current password
  * @apiBody {String} newPassword a users new password
  * @apiBody {String} confirmNewPassword confirmation of new password
