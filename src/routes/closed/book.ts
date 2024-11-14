@@ -148,7 +148,7 @@ bookRouter.get('/all', async (request: Request, response: Response) => {
 });
 
 /**
- * @api {get} /book/:author Request to get all books by author
+ * @api {get} /book/author/:author Request to get all books by author
  * @apiName GetBooksByAuthor
  * @apiGroup book
  *
