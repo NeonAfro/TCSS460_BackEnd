@@ -148,7 +148,7 @@ bookRouter.get('/all', async (request: Request, response: Response) => {
 });
 
 /**
- * @api {get} /book/:author Request to get all books by author
+ * @api {get} /book/author/:author Request to get all books by author
  * @apiName GetBooksByAuthor
  * @apiGroup book
  *
@@ -216,7 +216,7 @@ bookRouter.get(
 );
 
 /**
- * @api {get} /book/:isbn Request to get all books by ISBN
+ * @api {get} /book/isbn/:isbn Request to get all books by ISBN
  * @apiName GetBooksByISBN
  * @apiGroup book
  *
@@ -281,7 +281,7 @@ bookRouter.get('/isbn/:isbn', async (request: Request, response: Response) => {
 });
 
 /**
- * @api {get} /book/:title Request to get all books by Title
+ * @api {get} /book/title/:title Request to get all books by Title
  * @apiName GetBooksByTitle
  * @apiGroup book
  *
@@ -349,7 +349,7 @@ bookRouter.get(
 );
 
 /**
- * @api {get} /book/:rating Request to get all books by rating
+ * @api {get} /book/rating/:rating Request to get all books by rating
  * @apiName GetBooksByRating
  * @apiGroup book
  *
@@ -421,7 +421,7 @@ bookRouter.get(
 );
 
 /**
- * @api {get} /book Request to retrieve entries by year
+ * @api {get} /book/year/:year Request to retrieve entries by year
  *
  * @apiDescription Request to retrieve all the entries of <code>year</code>
  *
@@ -430,7 +430,7 @@ bookRouter.get(
  *
  * @apiUse JWT
  *
- * @apiQuery {Number} year The year in which to retrieve all entries.
+ * @apiParam {Number} year The year in which to retrieve all entries.
  *
  * @apiSuccess (200: OK) {Object[]} entries List of all book entrie(s) with the specified year.
  * @apiSuccess (200: OK) {Number} entries.id Unique identifier of the book.
