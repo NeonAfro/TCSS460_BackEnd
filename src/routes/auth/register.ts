@@ -235,7 +235,11 @@ registerRouter.post(
                 response.status(201).send({
                     accessToken,
                     id: request.id,
+                    name: request.body.name,
+                    email: request.body.email,
+                    role: request.body.role,
                 });
+                //id, name, email, role
             })
             .catch((error) => {
                 /***********************************************************************
