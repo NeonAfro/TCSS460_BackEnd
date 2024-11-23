@@ -35,12 +35,12 @@ const key = {
  * @apiBody {String} email a user's email
  * @apiBody {String} password a user's password
  *
- * @apiSuccess (200: OK) {String} accessToken JSON Web Token
+ * @apiSuccess (200: OK) {string} accessToken a newly created JWT Web Token
  * @apiSuccess (200: OK) {Object} user a user object
- * @apiSuccess (200: OK) {string} user.id the unique identifier of the user
- * @apiSuccess (200: OK) {string} user.email the email associated with the user
- * @apiSuccess (200: OK) {string} user.name the first name associated with the user
+ * @apiSuccess (200: OK) {string} user.name the name of the user
+ * @apiSuccess (200: OK) {string} user.email the email of the user
  * @apiSuccess (200: OK) {string} user.role the role of the user
+ * @apiSuccess (200: OK) {number} user.id the id of the user
  *
  * @apiError (400: Missing Parameters) {String} message "Missing required information"
  * @apiError (400: Invalid Credentials) {String} message "Invalid Credentials"
@@ -119,11 +119,10 @@ signinRouter.post(
                     response.json({
                         accessToken,
                         user: {
-                            id: result.rows[0].account_id,
-                            email: result.rows[0].email,
                             name: result.rows[0].firstname,
-                            role:
-                                result.rows[0].role === '1' ? 'Admin' : 'User',
+                            email: result.rows[0].email,
+                            role: 'Admin',
+                            id: result.rows[0].account_id,
                         },
                     });
                 } else {
