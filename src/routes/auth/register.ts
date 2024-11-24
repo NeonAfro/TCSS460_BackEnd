@@ -239,7 +239,7 @@ registerRouter.post(
                 response.status(201).send({
                     accessToken,
                     user: {
-                        name: request.body.name,
+                        name: request.body.firstname,
                         email: request.body.email,
                         role: 'Admin',
                         id: request.id,
