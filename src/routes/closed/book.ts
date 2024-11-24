@@ -545,7 +545,7 @@ function mwValidBookBody(
  * @apiSuccess (201: Created) {String} entry.author Author of the new book
  * @apiSuccess (201: Created) {String} entry.date Publication date of the book
  * @apiSuccess (201: Created) {Number} entry.isbn ISBN number of the book
- * @apiSuccess (201: Created) {String} entry.message Book added successfully
+ * @apiSuccess (201: Created) {String} entry.message "Book added successfully"
  *
  * @apiError (400: Invalid Title) {String} message "Title is required and should be at least 3 characters"
  * @apiError (400: Invalid Author) {String} message "Author is required"
