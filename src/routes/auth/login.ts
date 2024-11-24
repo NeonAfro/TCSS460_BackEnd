@@ -37,7 +37,7 @@ const key = {
  *
  * @apiSuccess (200: OK) {string} accessToken a newly created JWT Web Token
  * @apiSuccess (200: OK) {Object} user a user object
- * @apiSuccess (200: OK) {string} user.name the name of the user
+ * @apiSuccess (200: OK) {string} user.name the username of the user
  * @apiSuccess (200: OK) {string} user.email the email of the user
  * @apiSuccess (200: OK) {string} user.role the role of the user
  * @apiSuccess (200: OK) {number} user.id the id of the user
@@ -102,7 +102,7 @@ signinRouter.post(
                     //credentials match. get a new JWT
                     const accessToken = jwt.sign(
                         {
-                            name: result.rows[0].firstname,
+                            name: result.rows[0].username,
                             role: result.rows[0].account_role,
                             id: result.rows[0].account_id,
                         },
@@ -119,7 +119,7 @@ signinRouter.post(
                     response.json({
                         accessToken,
                         user: {
-                            name: result.rows[0].firstname,
+                            name: result.rows[0].username,
                             email: result.rows[0].email,
                             role: 'Admin',
                             id: result.rows[0].account_id,

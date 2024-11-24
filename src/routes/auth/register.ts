@@ -105,7 +105,7 @@ const emailMiddlewareCheck = (
  *
  * @apiSuccess (200: OK) {string} accessToken a newly created JWT Web Token
  * @apiSuccess (200: OK) {Object} user a user object
- * @apiSuccess (200: OK) {string} user.name the name of the user
+ * @apiSuccess (200: OK) {string} user.name the username of the user
  * @apiSuccess (200: OK) {string} user.email the email of the user
  * @apiSuccess (200: OK) {string} user.role the role of the user
  * @apiSuccess (200: OK) {number} user.id the id of the user
