@@ -505,10 +505,10 @@ function mwValidBookBody(
     if (!isStringProvided(author)) {
         return response.status(400).send({ message: 'Author is required' });
     }
-    if (!isNumberProvided(isbn) || isbn.toString().length !== 13) {
+    if (!isNumberProvided(isbn) || isbn.toString().length !== 13 || isbn < 0) {
         return response
             .status(400)
-            .send({ message: 'ISBN must be a 13-digit number' });
+            .send({ message: 'ISBN must be a positive 13-digit number' });
     }
     if (
         !isNumberProvided(date) ||
@@ -528,27 +528,31 @@ function mwValidBookBody(
 /**
  * @api {post} /book Request to add a new book
  *
- * @apiDescription Request to add a new book with title, author, published date, ISBN, and an optional message.
+ * @apiDescription Request to add a new book with title, author, published date, and ISBN.
  *
  * @apiName PostBook
  * @apiGroup book
  *
  * @apiUse JWT
  *
- * @apiBody {string} title the new book title
- * @apiBody {string} author the new book author
- * @apiBody {string} date the new published date
- * @apiBody {number} isbn the new isbn
- * @apiBody {string} [message] An optional message or note associated with the book
+ * @apiBody {string} title the new book title - must be at least 3 characters
+ * @apiBody {string} author the new book author - comma separated if multiple authors
+ * @apiBody {string} date the new published date - must be a valid year between 1000 and the current year
+ * @apiBody {number} isbn the new isbn - must be a unique 13-digit number
  *
  * @apiSuccess (201: Created) {Object} entry the details of the newly created book entry
  * @apiSuccess (201: Created) {String} entry.title Title of the new book
  * @apiSuccess (201: Created) {String} entry.author Author of the new book
  * @apiSuccess (201: Created) {String} entry.date Publication date of the book
  * @apiSuccess (201: Created) {Number} entry.isbn ISBN number of the book
- * @apiSuccess (201: Created) {String} [entry.message] Optional message associated with the book
+ * @apiSuccess (201: Created) {String} entry.message Book added successfully
  *
- * @apiError (400: Bad Request) {String} message "Book with isbn already exists or Missing required information"
+ * @apiError (400: Invalid Title) {String} message "Title is required and should be at least 3 characters"
+ * @apiError (400: Invalid Author) {String} message "Author is required"
+ * @apiError (400: Invalid ISBN) {String} message "ISBN must be a positive 13-digit number"
+ * @apiError (400: Invalid Year) {String} message "Date must be a valid year between 1000 and the current year"
+ * @apiError (400: Bad Request) {String} message "Book with isbn already exists"
+ * @apiError (400: Bad Request) {String} message "Missing required information"
  * @apiUse DBError
  */
 bookRouter.post(
