@@ -72,7 +72,7 @@ interface IBookRequest extends Request {
  * @apiSuccess (200: OK) {Number} entries.id Unique identifier of the book.
  * @apiSuccess (200: OK) {Object} entries.IBook Individual book entry.
  * @apiSuccess (200: OK) {Number} entries.IBook.isbn13 13-digit ISBN number of the book.
- * @apiSuccess (200: OK) {String} entries.IBook.authors List of authors of the book.
+ * @apiSuccess (200: OK) {String} entries.IBook.authors List of author(s) of the book.
  * @apiSuccess (200: OK) {Number} entries.IBook.publication_year Year the book was published.
  *
  * @apiSuccess (200: OK) {Object} entries.IBook.ratings Ratings
@@ -160,7 +160,7 @@ bookRouter.get('/all', async (request: Request, response: Response) => {
  * @apiSuccess (200: OK) {Number} entries.id Unique identifier of the book.
  * @apiSuccess (200: OK) {Object} entries.IBook Individual book entry.
  * @apiSuccess (200: OK) {Number} entries.IBook.isbn13 13-digit ISBN number of the book.
- * @apiSuccess (200: OK) {String} entries.IBook.authors List of authors of the book.
+ * @apiSuccess (200: OK) {String} entries.IBook.authors List of author(s) of the book.
  * @apiSuccess (200: OK) {Number} entries.IBook.publication_year Year the book was published.
  *
  * @apiSuccess (200: OK) {Object} entries.IBook.ratings Ratings
@@ -228,7 +228,7 @@ bookRouter.get(
  * @apiSuccess (200: OK) {Number} entries.id Unique identifier of the book.
  * @apiSuccess (200: OK) {Object} entries.IBook Individual book entry.
  * @apiSuccess (200: OK) {Number} entries.IBook.isbn13 13-digit ISBN number of the book.
- * @apiSuccess (200: OK) {String} entries.IBook.authors List of authors of the book.
+ * @apiSuccess (200: OK) {String} entries.IBook.authors List of author(s) of the book.
  * @apiSuccess (200: OK) {Number} entries.IBook.publication_year Year the book was published.
  *
  * @apiSuccess (200: OK) {Object} entries.IBook.ratings Ratings
@@ -293,7 +293,7 @@ bookRouter.get('/isbn/:isbn', async (request: Request, response: Response) => {
  * @apiSuccess (200: OK) {Number} entries.id Unique identifier of the book.
  * @apiSuccess (200: OK) {Object} entries.IBook Individual book entry.
  * @apiSuccess (200: OK) {Number} entries.IBook.isbn13 13-digit ISBN number of the book.
- * @apiSuccess (200: OK) {String} entries.IBook.authors List of authors of the book.
+ * @apiSuccess (200: OK) {String} entries.IBook.authors List of author(s) of the book.
  * @apiSuccess (200: OK) {Number} entries.IBook.publication_year Year the book was published.
  *
  * @apiSuccess (200: OK) {Object} entries.IBook.ratings Ratings
@@ -361,7 +361,7 @@ bookRouter.get(
  * @apiSuccess (200: OK) {Number} entries.id Unique identifier of the book.
  * @apiSuccess (200: OK) {Object} entries.IBook Individual book entry.
  * @apiSuccess (200: OK) {Number} entries.IBook.isbn13 13-digit ISBN number of the book.
- * @apiSuccess (200: OK) {String} entries.IBook.authors List of authors of the book.
+ * @apiSuccess (200: OK) {String} entries.IBook.authors List of author(s) of the book.
  * @apiSuccess (200: OK) {Number} entries.IBook.publication_year Year the book was published.
  *
  * @apiSuccess (200: OK) {Object} entries.IBook.ratings Ratings
@@ -436,7 +436,7 @@ bookRouter.get(
  * @apiSuccess (200: OK) {Number} entries.id Unique identifier of the book.
  * @apiSuccess (200: OK) {Object} entries.IBook Individual book entry.
  * @apiSuccess (200: OK) {Number} entries.IBook.isbn13 13-digit ISBN number of the book.
- * @apiSuccess (200: OK) {String} entries.IBook.authors List of authors of the book.
+ * @apiSuccess (200: OK) {String} entries.IBook.authors List of author(s) of the book.
  * @apiSuccess (200: OK) {Number} entries.IBook.publication_year Year the book was published.
  *
  * @apiSuccess (200: OK) {Object} entries.IBook.ratings Ratings
@@ -489,17 +489,41 @@ bookRouter.get('/year/:year', async (request: Request, response: Response) => {
     }
 });
 
+// URL for default book cover image
+const defaultImageURL =
+    'https://s.gr-assets.com/assets/nophoto/book/111x148-bcc042a9c91a29c1d680899eff700a03.png';
+const defaultImageSmallURL =
+    'https://s.gr-assets.com/assets/nophoto/book/50x75-a91bf249278a81aabab721ef782c4a74.png';
+
 //Post middleware function to check valid book post
 function mwValidBookBody(
     request: Request,
     response: Response,
     next: NextFunction
 ) {
-    const { title, author, isbn, date } = request.body;
+    const {
+        title,
+        author,
+        isbn,
+        date,
+        original_title = title,
+        rating_1_star = 0,
+        rating_2_star = 0,
+        rating_3_star = 0,
+        rating_4_star = 0,
+        rating_5_star = 0,
+        image_url = defaultImageURL, // default if undefined
+        image_small_url = defaultImageSmallURL, // default if undefined
+    } = request.body;
 
     if (!isStringProvided(title) || title.length < 3) {
         return response.status(400).send({
             message: 'Title is required and should be at least 3 characters',
+        });
+    }
+    if (!isStringProvided(original_title) || original_title.length < 3) {
+        return response.status(400).send({
+            message: 'Original Title should be at least 3 characters',
         });
     }
     if (!isStringProvided(author)) {
@@ -521,6 +545,35 @@ function mwValidBookBody(
                 'Date must be a valid year between 1000 and the current year',
         });
     }
+    if (
+        !isNumberProvided(rating_1_star) ||
+        !isNumberProvided(rating_2_star) ||
+        !isNumberProvided(rating_3_star) ||
+        !isNumberProvided(rating_4_star) ||
+        !isNumberProvided(rating_5_star) ||
+        rating_1_star < 0 ||
+        rating_2_star < 0 ||
+        rating_3_star < 0 ||
+        rating_4_star < 0 ||
+        rating_5_star < 0
+    ) {
+        return response.status(400).send({
+            message: 'Ratings must be positive integers or zero',
+        });
+    }
+    if (!isStringProvided(image_url) || !image_url.startsWith('http')) {
+        return response.status(400).send({
+            message: 'Image URL should be a URL or include http prefix',
+        });
+    }
+    if (
+        !isStringProvided(image_small_url) ||
+        !image_small_url.startsWith('http')
+    ) {
+        return response.status(400).send({
+            message: 'Small Image URL should be a URL or include http prefix',
+        });
+    }
 
     next();
 }
@@ -528,7 +581,7 @@ function mwValidBookBody(
 /**
  * @api {post} /book Request to add a new book
  *
- * @apiDescription Request to add a new book with title, author, published date, and ISBN.
+ * @apiDescription Request to add a new book
  *
  * @apiName PostBook
  * @apiGroup book
@@ -539,19 +592,46 @@ function mwValidBookBody(
  * @apiBody {string} author the new book author - comma separated if multiple authors
  * @apiBody {string} date the new published date - must be a valid year between 1000 and the current year
  * @apiBody {number} isbn the new isbn - must be a unique 13-digit number
+ * @apiBody {string} [original_title] the original title of the book - default is title
+ * @apiBody {number} [rating_1_star] the number of 1-star ratings - default is 0
+ * @apiBody {number} [rating_2_star] the number of 2-star ratings - default is 0
+ * @apiBody {number} [rating_3_star] the number of 3-star ratings - default is 0
+ * @apiBody {number} [rating_4_star] the number of 4-star ratings - default is 0
+ * @apiBody {number} [rating_5_star] the number of 5-star ratings - default is 0
+ * @apiBody {string} [image_url] the URL of the book's cover image - default is a placeholder image
+ * @apiBody {string} [image_small_url] the URL of the book's small cover image - default is a placeholder image
  *
- * @apiSuccess (201: Created) {Object} entry the details of the newly created book entry
- * @apiSuccess (201: Created) {String} entry.title Title of the new book
- * @apiSuccess (201: Created) {String} entry.author Author of the new book
- * @apiSuccess (201: Created) {String} entry.date Publication date of the book
- * @apiSuccess (201: Created) {Number} entry.isbn ISBN number of the book
- * @apiSuccess (201: Created) {String} entry.message "Book added successfully"
+ * @apiSuccess (201: Created) {Object[]} entries Object of newly created book.
+ * @apiSuccess (201: Created) {Number} entries.id Unique identifier of the book.
+ * @apiSuccess (201: Created) {Object} entries.IBook Individual book entry.
+ * @apiSuccess (201: Created) {Number} entries.IBook.isbn13 13-digit ISBN number of the book.
+ * @apiSuccess (201: Created) {String} entries.IBook.authors List of author(s) of the book.
+ * @apiSuccess (201: Created) {Number} entries.IBook.publication_year Year the book was published.
+ *
+ * @apiSuccess (201: Created) {Object} entries.IBook.ratings Ratings
+ * @apiSuccess (201: Created) {Number} entries.IBook.ratings.rating_avg Average rating of the book.
+ * @apiSuccess (201: Created) {Number} entries.IBook.ratings.rating_count Total ratings count.
+ * @apiSuccess (201: Created) {Number} entries.IBook.ratings.rating_1_star Count of 1-star ratings.
+ * @apiSuccess (201: Created) {Number} entries.IBook.ratings.rating_2_star Count of 2-star ratings.
+ * @apiSuccess (201: Created) {Number} entries.IBook.ratings.rating_3_star Count of 3-star ratings.
+ * @apiSuccess (201: Created) {Number} entries.IBook.ratings.rating_4_star Count of 4-star ratings.
+ * @apiSuccess (201: Created) {Number} entries.IBook.ratings.rating_5_star Count of 5-star ratings.
+ *
+ * @apiSuccess (201: Created) {Object} entries.IBook.icons Icons
+ * @apiSuccess (201: Created) {String} entries.IBook.icons.image_url URL of the book's cover image.
+ * @apiSuccess (201: Created) {String} entries.IBook.icons.image_small_url Small image URL.
+ *
+ * @apiSuccess (201: Created) {String} message "Book added successfully"
  *
  * @apiError (400: Invalid Title) {String} message "Title is required and should be at least 3 characters"
+ * @apiError (400: Invalid Original Title) {String} message "Original Title should be at least 3 characters"
  * @apiError (400: Invalid Author) {String} message "Author is required"
  * @apiError (400: Invalid ISBN) {String} message "ISBN must be a positive 13-digit number"
  * @apiError (400: Invalid Year) {String} message "Date must be a valid year between 1000 and the current year"
- * @apiError (400: Bad Request) {String} message "Book with isbn already exists"
+ * @apiError (400: Invalid Ratings) {String} message "Ratings must be positive integers or zero"
+ * @apiError (400: Invalid Image URL) {String} message "Image URL should be a URL or include http prefix"
+ * @apiError (400: Invalid Small Image URL) {String} message "Small Image URL should be a URL or include http prefix"
+ * @apiError (400: Book Exists) {String} message "Book with isbn already exists"
  * @apiError (400: Bad Request) {String} message "Missing required information"
  * @apiUse DBError
  */
@@ -559,10 +639,23 @@ bookRouter.post(
     '/',
     mwValidBookBody,
     async (request: Request, response: Response) => {
-        const { title, author, date, isbn } = request.body;
+        const {
+            title,
+            author,
+            isbn,
+            date,
+            original_title = title,
+            rating_1_star = 0,
+            rating_2_star = 0,
+            rating_3_star = 0,
+            rating_4_star = 0,
+            rating_5_star = 0,
+            image_url = defaultImageURL, // default if undefined
+            image_small_url = defaultImageSmallURL, // default if undefined
+        } = request.body;
 
         try {
-            // Step 1: Check for existing book by ISBN
+            // Check for existing book by ISBN
             const checkQuery = 'SELECT * FROM books WHERE isbn13 = $1';
             const { rowCount } = await pool.query(checkQuery, [isbn]);
 
@@ -580,7 +673,25 @@ bookRouter.post(
                     ? maxResult.rows[0].max_id + 1
                     : 1;
 
-            // Step 2: Insert the new book into the database
+            const rating_count =
+                rating_1_star +
+                rating_2_star +
+                rating_3_star +
+                rating_4_star +
+                rating_5_star;
+
+            const weightedSum =
+                rating_1_star * 1 +
+                rating_2_star * 2 +
+                rating_3_star * 3 +
+                rating_4_star * 4 +
+                rating_5_star * 5;
+
+            // Prevent division by zero
+            const rating_avg =
+                rating_count > 0 ? weightedSum / rating_count : 0;
+
+            // Insert the new book into the database
             const insertQuery = `
                 INSERT INTO books (title, authors, isbn13, publication_year, id, original_title, 
                     rating_avg,
@@ -589,14 +700,30 @@ bookRouter.post(
                     rating_2_star,
                     rating_3_star,
                     rating_4_star,
-                    rating_5_star) 
-                VALUES ($1, $2, $3, $4, $5, $1, 2.5, 1, 1, 1, 1, 1, 1) RETURNING *;
+                    rating_5_star,
+                    image_url,
+                    image_small_url) 
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15) RETURNING *;
             `;
-            const values = [title, author, isbn, date, newID];
+            const values = [
+                title,
+                author,
+                isbn,
+                date,
+                newID,
+                original_title,
+                rating_avg,
+                rating_count,
+                rating_1_star,
+                rating_2_star,
+                rating_3_star,
+                rating_4_star,
+                rating_5_star,
+                image_url,
+                image_small_url,
+            ];
             const { rows } = await pool.query(insertQuery, values);
-            const formattedRows = rows.map(format);
 
-            // Step 3: Respond with the created book data
             response.status(201).send({
                 entries: rows.map(format),
                 message: 'Book added successfully',
