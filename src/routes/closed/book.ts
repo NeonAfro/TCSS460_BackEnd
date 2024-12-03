@@ -852,7 +852,13 @@ bookRouter.put(
             +newRatingsCount > 0 ? +weightedSum / +newRatingsCount : 0;
 
         // If no rating fields were provided, return a 400 error
-        if (request.body.length === 0) {
+        if (
+            rating_1_star == 0 &&
+            rating_2_star == 0 &&
+            rating_3_star == 0 &&
+            rating_4_star == 0 &&
+            rating_5_star == 0
+        ) {
             response.status(400).send({
                 message: 'No valid rating fields provided for update',
             });
