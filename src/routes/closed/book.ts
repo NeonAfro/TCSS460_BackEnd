@@ -760,7 +760,7 @@ function mwValidBookRating(
 }
 
 /**
- * @api {put} /book/rate/:id Request to change an entry
+ * @api {put} /book/rate/:id Request to change an entry rating
  *
  * @apiDescription Request to replace or change the rating of a book
  *
@@ -770,15 +770,35 @@ function mwValidBookRating(
  * @apiUse JWT
  *
  * @apiParam {number} id of book to be updated.
+ * @apiBody {number} [rating_1_star] the number of 1-star ratings to add to the book.
+ * @apiBody {number} [rating_2_star] the number of 2-star ratings to add to the book.
+ * @apiBody {number} [rating_3_star] the number of 3-star ratings to add to the book.
+ * @apiBody {number} [rating_4_star] the number of 4-star ratings to add to the book.
+ * @apiBody {number} [rating_5_star] the number of 5-star ratings to add to the book.
  *
- * @apiSuccess (200: OK) {Object} entry Details of the updated book entry.
- * @apiSuccess (200: OK) {String} entry.title The title of the updated book.
- * @apiSuccess (200: OK) {String} entry.author The author of the updated book.
- * @apiSuccess (200: OK) {Number} entry.rating The new rating of the book.
- * @apiSuccess (200: OK) {String} [entry.message] The optional message associated with the book rating.
+ * @apiSuccess (201: OK) {Object[]} entries Object of newly updated book - should be one.
+ * @apiSuccess (201: OK) {Number} entries.id Unique identifier of the book.
+ * @apiSuccess (201: OK) {Object} entries.IBook Individual book entry.
+ * @apiSuccess (201: OK) {Number} entries.IBook.isbn13 13-digit ISBN number of the book.
+ * @apiSuccess (201: OK) {String} entries.IBook.authors List of author(s) of the book.
+ * @apiSuccess (201: OK) {Number} entries.IBook.publication_year Year the book was published.
  *
- * @apiError (404: Not Found) {String} message "Book not found" if the specified book does not exist.
- * @apiError (400: Bad Request) {String} message "ISBN not provided"
+ * @apiSuccess (201: OK) {Object} entries.IBook.ratings Ratings
+ * @apiSuccess (201: OK) {Number} entries.IBook.ratings.rating_avg new Average rating of the book.
+ * @apiSuccess (201: OK) {Number} entries.IBook.ratings.rating_count new Total ratings count.
+ * @apiSuccess (201: OK) {Number} entries.IBook.ratings.rating_1_star Count of new 1-star ratings.
+ * @apiSuccess (201: OK) {Number} entries.IBook.ratings.rating_2_star Count of new 2-star ratings.
+ * @apiSuccess (201: OK) {Number} entries.IBook.ratings.rating_3_star Count of new 3-star ratings.
+ * @apiSuccess (201: OK) {Number} entries.IBook.ratings.rating_4_star Count of new 4-star ratings.
+ * @apiSuccess (201: OK) {Number} entries.IBook.ratings.rating_5_star Count of new 5-star ratings.
+ *
+ * @apiSuccess (201: OK) {Object} entries.IBook.icons Icons
+ * @apiSuccess (201: OK) {String} entries.IBook.icons.image_url URL of the book's cover image.
+ * @apiSuccess (201: OK) {String} entries.IBook.icons.image_small_url Small image URL.
+ * @apiSuccess (201: OK) {String} message "Book added successfully"
+ *
+ * @apiError (400: Bad Request) {String} message "No valid rating fields provided for update"
+ * @apiError (404: Not Found) {String} message "Book not found" if the specified book of id does not exist.
  * @apiUse DBError
  */
 bookRouter.put(
@@ -787,68 +807,78 @@ bookRouter.put(
     async (request: Request, response: Response) => {
         const { id } = request.params;
         const {
-            rating_1_star,
-            rating_2_star,
-            rating_3_star,
-            rating_4_star,
-            rating_5_star,
+            rating_1_star = 0,
+            rating_2_star = 0,
+            rating_3_star = 0,
+            rating_4_star = 0,
+            rating_5_star = 0,
         } = request.body;
 
-        // Initialize the base of the query and values array
-        let theQuery = `UPDATE books SET `;
-        const updates = [];
-        const values = [];
-        let index = 1;
+        const checkQuery = 'SELECT * FROM books WHERE id = $1';
+        const { rows } = await pool.query(checkQuery, [id]);
 
-        // Dynamically add fields to the query if they are provided in the request body
-        if (rating_1_star !== undefined) {
-            updates.push(`rating_1_star = rating_1_star + $${index}`);
-            values.push(rating_1_star);
-            index++;
+        if (rows.length === 0) {
+            response.status(404).send({
+                message: 'Book not found',
+            });
+            return;
         }
-        if (rating_2_star !== undefined) {
-            updates.push(`rating_2_star = rating_2_star + $${index}`);
-            values.push(rating_2_star);
-            index++;
-        }
-        if (rating_3_star !== undefined) {
-            updates.push(`rating_3_star = rating_3_star + $${index}`);
-            values.push(rating_3_star);
-            index++;
-        }
-        if (rating_4_star !== undefined) {
-            updates.push(`rating_4_star = rating_4_star + $${index}`);
-            values.push(rating_4_star);
-            index++;
-        }
-        if (rating_5_star !== undefined) {
-            updates.push(`rating_5_star = rating_5_star + $${index}`);
-            values.push(rating_5_star);
-            index++;
-        }
+
+        const oldRatingsCount = rows[0].rating_count;
+        const old1Star = rows[0].rating_1_star;
+        const old2Star = rows[0].rating_2_star;
+        const old3Star = rows[0].rating_3_star;
+        const old4Star = rows[0].rating_4_star;
+        const old5Star = rows[0].rating_5_star;
+        console.error(oldRatingsCount);
+        console.error(rows);
+        const newRatingsCount =
+            +oldRatingsCount +
+            +rating_1_star +
+            +rating_2_star +
+            +rating_3_star +
+            +rating_4_star +
+            +rating_5_star;
+
+        const weightedSum =
+            (+rating_1_star + +old1Star) * 1 +
+            (+rating_2_star + +old2Star) * 2 +
+            (+rating_3_star + +old3Star) * 3 +
+            (+rating_4_star + +old4Star) * 4 +
+            (+rating_5_star + +old5Star) * 5;
+
+        // Prevent division by zero
+        const rating_avg =
+            +newRatingsCount > 0 ? +weightedSum / +newRatingsCount : 0;
 
         // If no rating fields were provided, return a 400 error
-        if (updates.length === 0) {
+        if (request.body.length === 0) {
             response.status(400).send({
                 message: 'No valid rating fields provided for update',
             });
             return;
         }
+        const theQuery = `UPDATE books SET
+        rating_avg = $1,
+        rating_count = $2,
+        rating_1_star = rating_1_star + $3,
+        rating_2_star = rating_2_star + $4,
+        rating_3_star = rating_3_star + $5,
+        rating_4_star = rating_4_star + $6,
+        rating_5_star = rating_5_star + $7
+        WHERE id = $8 
+        RETURNING *`;
 
-        // Update the rating count based on provided fields
-        updates.push(`rating_count = rating_count + ${values.join(' + ')}`);
-
-        // Calculate average rating using the updated rating values
-        updates.push(`
-            rating_avg = (
-                (rating_1_star * 1 + rating_2_star * 2 + rating_3_star * 3 + rating_4_star * 4 + rating_5_star * 5)::float /
-                NULLIF(rating_count, 0)
-            )
-        `);
-
-        // Complete the query by adding WHERE clause and RETURNING
-        theQuery += updates.join(', ') + ` WHERE id = $${index} RETURNING *`;
-        values.push(id);
+        const values = [
+            rating_avg,
+            newRatingsCount,
+            rating_1_star,
+            rating_2_star,
+            rating_3_star,
+            rating_4_star,
+            rating_5_star,
+            id,
+        ];
 
         try {
             const { rows } = await pool.query(theQuery, values);
@@ -859,11 +889,11 @@ bookRouter.put(
             }
 
             const formattedRows = rows.map(format);
-            console.log('rows:', formattedRows);
+            //console.log('rows:', formattedRows);
 
             response.status(200).send({
+                entries: formattedRows,
                 message: 'Book ratings updated successfully',
-                entries: rows.map(format),
             });
         } catch (error) {
             console.error('Error executing update query:', error);
