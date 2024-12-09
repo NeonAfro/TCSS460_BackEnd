@@ -6,10 +6,10 @@ https://neonafro.github.io/TCSS460_BackEnd/
 
 ## Group Members
 
-Jeremiah Brenio
-Edison Chen
-Luke Chung
-Dalton Miltimore
+-   Jeremiah Brenio
+-   Edison Chen
+-   Luke Chung
+-   Dalton Miltimore
 
 # Back End Guide
 
